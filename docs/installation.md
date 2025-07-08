@@ -40,33 +40,68 @@ This guide provides detailed instructions for installing Cyreal on various platf
 
 ## Automated Installation
 
-### Linux/macOS
+### Quick Installation (Recommended)
 
+**Step 1:** Clone the repository
 ```bash
-# Download and run installer
-curl -fsSL https://raw.githubusercontent.com/cyreal-project/cyreal/main/install.sh -o install.sh
-chmod +x install.sh
-./install.sh
+git clone https://github.com/macawi-ai/cyreal.git
+cd cyreal
 ```
 
-The installer will:
-1. Check system prerequisites
-2. Install missing dependencies
-3. Build all Cyreal packages
-4. Set up required directories
-5. Configure global `cyreald` command
+**Step 2:** Run the installer
 
-### Windows
+#### Linux/macOS
+```bash
+# Install to default directory (~/ cyreal-deployment)
+./install.sh
 
-Open PowerShell as Administrator and run:
+# Install to custom directory
+./install.sh --install-dir /opt/cyreal
 
+# Install to home directory
+./install.sh -d ~/my-cyreal
+```
+
+#### Windows PowerShell
 ```powershell
-# Set execution policy temporarily
-Set-ExecutionPolicy Bypass -Scope Process
-
-# Download and run installer
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/cyreal-project/cyreal/main/install.ps1 -OutFile install.ps1
+# Install to default directory (~/cyreal-deployment)
 .\install.ps1
+
+# Install to custom directory
+.\install.ps1 -InstallDir "C:\cyreal"
+
+# Install to AppData
+.\install.ps1 -InstallDir "$env:LOCALAPPDATA\cyreal"
+```
+
+### Installation Directory Options
+
+The installation scripts support custom installation directories to keep your deployment separate from the source code:
+
+- **Default**: `~/cyreal-deployment` (Linux/macOS) or `%USERPROFILE%\cyreal-deployment` (Windows)
+- **Custom**: Specify any directory you prefer
+- **Benefits**: Keeps source repo clean, allows multiple deployments, better organization
+
+### What Gets Installed
+
+The installer will:
+1. Copy source files to the installation directory (excluding .git, node_modules)
+2. Install Node.js dependencies
+3. Build all packages with TypeScript
+4. Create runtime directories for logs and data
+5. Set up global commands (`cyreald`, `cyreal-test`)
+6. Configure platform-specific permissions
+
+### Help and Options
+
+Both installers support help and options:
+
+```bash
+# Linux/macOS help
+./install.sh --help
+
+# Windows help
+.\install.ps1 -Help
 ```
 
 The installer will:

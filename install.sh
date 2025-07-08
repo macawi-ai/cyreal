@@ -9,11 +9,57 @@ set -e
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+# Default installation directory
+DEFAULT_INSTALL_DIR="$HOME/cyreal-deployment"
+INSTALL_DIR=""
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --install-dir|-d)
+            INSTALL_DIR="$2"
+            shift 2
+            ;;
+        --help|-h)
+            echo "Cyreal Installation Script"
+            echo ""
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  -d, --install-dir DIR   Installation directory (default: $DEFAULT_INSTALL_DIR)"
+            echo "  -h, --help              Show this help message"
+            echo ""
+            echo "Examples:"
+            echo "  $0                                    # Install to default directory"
+            echo "  $0 --install-dir /opt/cyreal          # Install to /opt/cyreal"
+            echo "  $0 -d ~/my-cyreal                     # Install to ~/my-cyreal"
+            echo ""
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Unknown option: $1${NC}"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
+# Set installation directory
+if [[ -z "$INSTALL_DIR" ]]; then
+    INSTALL_DIR="$DEFAULT_INSTALL_DIR"
+fi
+
+# Expand tilde if present
+INSTALL_DIR="${INSTALL_DIR/#\~/$HOME}"
 
 echo -e "${GREEN}=====================================${NC}"
 echo -e "${GREEN}    Cyreal Installation Script      ${NC}"
 echo -e "${GREEN}=====================================${NC}"
+echo ""
+echo -e "${BLUE}Installation Directory:${NC} $INSTALL_DIR"
 echo ""
 
 # Detect OS
@@ -169,6 +215,47 @@ if [ ! -f "package.json" ] || [ ! -d "packages" ]; then
     exit 1
 fi
 
+# Confirm installation directory
+echo ""
+if [[ -d "$INSTALL_DIR" ]] && [[ "$(ls -A $INSTALL_DIR 2>/dev/null)" ]]; then
+    echo -e "${YELLOW}Warning: Installation directory already exists and is not empty:${NC}"
+    echo "  $INSTALL_DIR"
+    echo ""
+    read -p "Continue? This will overwrite existing files. (y/N): " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "${RED}Installation cancelled.${NC}"
+        exit 1
+    fi
+fi
+
+# Create installation directory
+echo ""
+echo -e "${YELLOW}Creating installation directory...${NC}"
+mkdir -p "$INSTALL_DIR"
+
+# Copy source files to installation directory (excluding .git and node_modules)
+echo -e "${YELLOW}Copying Cyreal source to installation directory...${NC}"
+SOURCE_DIR="$(dirname "$(readlink -f "$0")")"
+
+# Create a temporary exclusion list
+cat > /tmp/cyreal_exclude.txt << EOF
+.git
+node_modules
+dist
+.nyc_output
+coverage
+*.log
+.DS_Store
+EOF
+
+rsync -av --exclude-from=/tmp/cyreal_exclude.txt "$SOURCE_DIR/" "$INSTALL_DIR/"
+rm -f /tmp/cyreal_exclude.txt
+
+# Change to installation directory for build
+echo -e "${BLUE}Working in installation directory: $INSTALL_DIR${NC}"
+cd "$INSTALL_DIR"
+
 # Install dependencies
 echo ""
 echo -e "${YELLOW}Installing project dependencies...${NC}"
@@ -250,10 +337,20 @@ echo -e "${GREEN}=====================================${NC}"
 echo -e "${GREEN}    Installation Complete!          ${NC}"
 echo -e "${GREEN}=====================================${NC}"
 echo ""
+echo -e "${GREEN}Cyreal has been installed to:${NC}"
+echo -e "  ${BLUE}$INSTALL_DIR${NC}"
+echo ""
 echo -e "${GREEN}You can now use Cyreal with:${NC}"
-echo -e "  ${YELLOW}cyreald --help${NC}     - Show command options"
-echo -e "  ${YELLOW}cyreald list${NC}       - List available serial ports"
-echo -e "  ${YELLOW}cyreald start${NC}      - Start the daemon"
+echo -e "  ${YELLOW}cyreald --help${NC}         - Show command options"
+echo -e "  ${YELLOW}cyreald list${NC}           - List available serial ports"
+echo -e "  ${YELLOW}cyreald start${NC}          - Start the daemon"
+echo -e "  ${YELLOW}cyreal-test --help${NC}     - Test installation"
+echo ""
+echo -e "${GREEN}Installation directory contains:${NC}"
+echo -e "  📦 Built packages in packages/*/dist/"
+echo -e "  📚 Documentation in docs/"
+echo -e "  ⚙️  Configuration in config/"
+echo -e "  🧪 Test examples in examples/"
 echo ""
 
 if [[ "$OS" == "Linux" ]] && ! groups $USER | grep -q '\bdialout\b'; then

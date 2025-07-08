@@ -31,14 +31,21 @@ irm https://raw.githubusercontent.com/cyreal-project/cyreal/main/install.ps1 | i
 
 ```bash
 # Clone the repository
-git clone https://github.com/cyreal-project/cyreal.git
+git clone https://github.com/macawi-ai/cyreal.git
 cd cyreal
 
-# Run the installer
-./install.sh  # Linux/macOS
-# or
-powershell -ExecutionPolicy Bypass -File install.ps1  # Windows
+# Run the installer with options
+./install.sh                           # Install to ~/cyreal-deployment
+./install.sh --install-dir /opt/cyreal  # Install to custom directory
+./install.sh --help                    # Show all options
+
+# Windows (PowerShell)
+.\install.ps1                          # Install to ~/cyreal-deployment
+.\install.ps1 -InstallDir "C:\cyreal"  # Install to custom directory
+.\install.ps1 -Help                    # Show all options
 ```
+
+> 💡 **Pro Tip**: The installer creates a separate deployment directory, keeping your source repo clean and allowing multiple installations.
 
 ## System Requirements
 

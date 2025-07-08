@@ -1,7 +1,15 @@
 # Cyreal Installation Script for Windows PowerShell
 # Run as Administrator for best results
 
+param(
+    [string]$InstallDir = "",
+    [switch]$Help
+)
+
 $ErrorActionPreference = "Stop"
+
+# Default installation directory
+$DefaultInstallDir = "$env:USERPROFILE\cyreal-deployment"
 
 # Colors and formatting
 function Write-Success { Write-Host $args -ForegroundColor Green }
@@ -9,9 +17,37 @@ function Write-Error { Write-Host $args -ForegroundColor Red }
 function Write-Warning { Write-Host $args -ForegroundColor Yellow }
 function Write-Info { Write-Host $args -ForegroundColor Cyan }
 
+# Show help if requested
+if ($Help) {
+    Write-Host "Cyreal Installation Script for Windows"
+    Write-Host ""
+    Write-Host "Usage: .\install.ps1 [OPTIONS]"
+    Write-Host ""
+    Write-Host "Options:"
+    Write-Host "  -InstallDir DIR    Installation directory (default: $DefaultInstallDir)"
+    Write-Host "  -Help              Show this help message"
+    Write-Host ""
+    Write-Host "Examples:"
+    Write-Host "  .\install.ps1                              # Install to default directory"
+    Write-Host "  .\install.ps1 -InstallDir C:\cyreal        # Install to C:\cyreal"
+    Write-Host "  .\install.ps1 -InstallDir `$env:LOCALAPPDATA\cyreal  # Install to AppData"
+    Write-Host ""
+    exit 0
+}
+
+# Set installation directory
+if ([string]::IsNullOrEmpty($InstallDir)) {
+    $InstallDir = $DefaultInstallDir
+}
+
+# Expand environment variables
+$InstallDir = [Environment]::ExpandEnvironmentVariables($InstallDir)
+
 Write-Success "====================================="
 Write-Success "    Cyreal Installation Script      "
 Write-Success "====================================="
+Write-Host ""
+Write-Info "Installation Directory: $InstallDir"
 Write-Host ""
 
 # Check if running as Administrator
@@ -138,6 +174,40 @@ if (-not (Test-Path "package.json") -or -not (Test-Path "packages")) {
     exit 1
 }
 
+# Confirm installation directory
+Write-Host ""
+if (Test-Path $InstallDir) {
+    $contents = Get-ChildItem $InstallDir -ErrorAction SilentlyContinue
+    if ($contents) {
+        Write-Warning "Warning: Installation directory already exists and is not empty:"
+        Write-Host "  $InstallDir"
+        Write-Host ""
+        $response = Read-Host "Continue? This will overwrite existing files. (y/N)"
+        if ($response -notmatch "^[Yy]$") {
+            Write-Error "Installation cancelled."
+            exit 1
+        }
+    }
+}
+
+# Create installation directory
+Write-Host ""
+Write-Warning "Creating installation directory..."
+if (-not (Test-Path $InstallDir)) {
+    New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
+}
+
+# Copy source files to installation directory (excluding .git and node_modules)
+Write-Warning "Copying Cyreal source to installation directory..."
+$SourceDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+# Copy files, excluding certain directories
+robocopy $SourceDir $InstallDir /E /XD .git node_modules dist .nyc_output coverage /XF *.log .DS_Store | Out-Null
+
+# Change to installation directory for build
+Write-Info "Working in installation directory: $InstallDir"
+Set-Location $InstallDir
+
 # Install dependencies
 Write-Host ""
 Write-Warning "Installing project dependencies..."
@@ -200,10 +270,20 @@ Write-Success "====================================="
 Write-Success "    Installation Complete!          "
 Write-Success "====================================="
 Write-Host ""
+Write-Success "Cyreal has been installed to:"
+Write-Info "  $InstallDir"
+Write-Host ""
 Write-Success "You can now use Cyreal with:"
-Write-Info "  cyreald --help     - Show command options"
-Write-Info "  cyreald list       - List available serial ports"
-Write-Info "  cyreald start      - Start the daemon"
+Write-Info "  cyreald --help         - Show command options"
+Write-Info "  cyreald list           - List available serial ports"
+Write-Info "  cyreald start          - Start the daemon"
+Write-Info "  cyreal-test --help     - Test installation"
+Write-Host ""
+Write-Success "Installation directory contains:"
+Write-Info "  📦 Built packages in packages\*\dist\"
+Write-Info "  📚 Documentation in docs\"
+Write-Info "  ⚙️  Configuration in config\"
+Write-Info "  🧪 Test examples in examples\"
 Write-Host ""
 Write-Warning "Note: On Windows, use COM ports (e.g., COM1, COM3)"
 Write-Warning "Note: USB serial adapters will appear as new COM ports when connected"
