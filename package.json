@@ -14,8 +14,7 @@
     "test": "lerna run test",
     "dev": "lerna run dev --parallel",
     "lint": "lerna run lint",
-    "typecheck": "lerna run typecheck",
-    "postinstall": "lerna bootstrap"
+    "typecheck": "lerna run typecheck"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

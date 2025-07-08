@@ -161,13 +161,28 @@ echo ""
 echo -e "${YELLOW}Checking build tools...${NC}"
 
 if [[ "$OS" == "Linux" ]]; then
-    # Check for build-essential
-    if dpkg -l | grep -q build-essential; then
-        echo -e "${GREEN}✓${NC} build-essential installed"
-    else
+    # Check for build tools based on distribution
+    if command_exists gcc && command_exists make && command_exists g++; then
+        echo -e "${GREEN}✓${NC} Build tools (gcc, make, g++) installed"
+    elif command_exists pacman; then
+        # Arch-based systems (Manjaro, Arch Linux)
+        echo -e "${YELLOW}Installing base-devel for Arch-based system...${NC}"
+        sudo pacman -S --needed base-devel
+    elif command_exists apt-get; then
+        # Debian-based systems (Ubuntu, Debian)
         echo -e "${YELLOW}Installing build-essential...${NC}"
         sudo apt-get update
         sudo apt-get install -y build-essential
+    elif command_exists dnf; then
+        # Fedora-based systems
+        echo -e "${YELLOW}Installing development tools...${NC}"
+        sudo dnf groupinstall -y "Development Tools"
+    elif command_exists yum; then
+        # CentOS/RHEL systems
+        echo -e "${YELLOW}Installing development tools...${NC}"
+        sudo yum groupinstall -y "Development Tools"
+    else
+        echo -e "${YELLOW}Please install build tools manually: gcc, make, g++${NC}"
     fi
     
     # Check for Python (required by node-gyp)
@@ -266,10 +281,15 @@ echo ""
 echo -e "${YELLOW}Installing lerna...${NC}"
 npm install -g lerna@latest
 
-# Bootstrap packages
+# Bootstrap packages (Lerna v8+ uses npm workspaces)
 echo ""
 echo -e "${YELLOW}Bootstrapping packages...${NC}"
-npx lerna bootstrap
+if npx lerna --version | grep -q "^7\."; then
+    npx lerna bootstrap
+else
+    # Lerna v8+ removed bootstrap, use npm workspaces instead
+    npm install --workspaces
+fi
 
 # Build all packages
 echo ""
@@ -319,17 +339,20 @@ if [[ "$OS" == "Linux" ]]; then
     fi
 fi
 
-# Create symlink for global command
+# Create symlinks for global commands
 echo ""
-echo -e "${YELLOW}Setting up global cyreald command...${NC}"
+echo -e "${YELLOW}Setting up global Cyreal commands...${NC}"
 if [[ "$OS" == "Windows" ]]; then
     # Windows doesn't need symlinks with npm global install
     cd packages/cyreald && npm link && cd ../..
+    cd packages/cyreal-tester && npm link && cd ../..
 else
     # Unix-like systems
     cd packages/cyreald && sudo npm link && cd ../..
+    cd packages/cyreal-tester && sudo npm link && cd ../..
 fi
 echo -e "${GREEN}✓${NC} cyreald command available globally"
+echo -e "${GREEN}✓${NC} cyreal-test command available globally"
 
 # Success message
 echo ""
