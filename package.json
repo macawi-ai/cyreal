@@ -1,0 +1,41 @@
+{
+  "name": "cyreal",
+  "version": "0.1.0",
+  "description": "Cybernetic serial port bridge for AI via Model Context Protocol",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna run build",
+    "build:win": "lerna run build --concurrency 1",
+    "clean": "lerna clean",
+    "test": "lerna run test",
+    "dev": "lerna run dev --parallel",
+    "lint": "lerna run lint",
+    "typecheck": "lerna run typecheck",
+    "postinstall": "lerna bootstrap"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.0.0",
+    "lerna": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Macawi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cyreal-project/cyreal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cyreal-project/cyreal/issues"
+  },
+  "homepage": "https://github.com/cyreal-project/cyreal#readme"
+}

@@ -1,0 +1,143 @@
+# Cyreal Configuration File
+# Cybernetic Serial Port Bridge
+# 
+# Priority Order: CLI args > user.yaml > system.yaml > this file
+# Documentation: https://github.com/cyreal-project/cyreal/docs/configuration.md
+
+# Daemon Settings
+daemon:
+  logLevel: info          # error, warn, info, debug
+  workingDirectory: .
+  hotReload: true         # Automatically reload config on changes
+
+# Network Configuration
+# Port 3500 honors the Burroughs 3500 mainframe used in Chile's Project Cybersyn
+network:
+  tcp:
+    enabled: true
+    port: 3500            # Burroughs 3500 tribute to Stafford Beer's Cybersyn
+    host: 0.0.0.0         # Bind to all interfaces
+    maxConnections: 10
+    keepAlive: true
+    keepAliveDelay: 60000 # 60 seconds
+  
+  udp:
+    enabled: false
+    port: 3501            # UDP companion port
+    host: 0.0.0.0
+    broadcast: false
+  
+  websocket:
+    enabled: false
+    port: 3502
+    path: /ws
+    compression: true
+  
+  ssl:
+    enabled: false
+    rejectUnauthorized: true
+    # cert: /path/to/cert.pem
+    # key: /path/to/key.pem
+    # ca: /path/to/ca.pem
+
+# Security Configuration
+security:
+  level: balanced         # paranoid, balanced, permissive, debug
+  allowedIPs: []          # Empty = allow all. Use CIDR: ["192.168.1.0/24"]
+  
+  rateLimit:
+    enabled: true
+    requestsPerMinute: 60
+    blacklistDuration: 3600000  # 1 hour
+  
+  audit:
+    enabled: true
+    events:
+      - auth
+      - error
+      - config
+      - command
+
+# Serial Port Settings
+ports:
+  default:
+    baudRate: 9600
+    dataBits: 8           # 5, 6, 7, 8
+    stopBits: 1           # 1, 2
+    parity: none          # none, even, odd, mark, space
+    flowControl: none     # none, hardware, software
+    bufferSize: 2048
+    timeout: 5000         # milliseconds
+  
+  # Port-specific overrides
+  specific:
+    # Example Windows configuration
+    # COM3:
+    #   name: "MAIN_RS485_BUS"
+    #   baudRate: 19200
+    #   rs485:
+    #     enabled: true
+    #     turnaroundDelay: 1
+    
+    # Example Linux/BeagleBone configuration
+    # /dev/ttyS3:
+    #   name: "MIKROBUS_CLICK"
+    #   baudRate: 115200
+    #   rs485:
+    #     enabled: true
+    #     rtsPin: 64        # GPIO pin for RTS control
+    #     turnaroundDelay: 1
+    #     terminationEnabled: true
+
+# VSM Governor Configuration
+governors:
+  # System 1: Operational Control
+  operational:
+    probeInterval: 5000   # How often to check port health (ms)
+    errorThreshold: 10    # Max errors before escalation
+    retryAttempts: 3
+    retryDelay: 1000      # Delay between retries (ms)
+  
+  # System 2: Coordination
+  coordination:
+    conflictResolution: priority  # priority, round-robin, load-balance
+    loadBalancing: false
+  
+  # System 3: Management
+  management:
+    autoRecover: true
+    healthCheckInterval: 30000    # 30 seconds
+    failureThreshold: 3
+  
+  # System 4: Intelligence
+  intelligence:
+    learning: true        # Enable learning from patterns
+    predictionEnabled: false
+    # modelPath: /path/to/ml/model
+  
+  # System 5: Meta-System
+  meta:
+    telemetry: false      # Send usage data (respects privacy)
+    cloudSync: false      # Sync configs across devices
+    reportingInterval: 300000  # 5 minutes
+
+# Chaos Engineering (Hogan's Goat Mode!)
+chaos:
+  enabled: false          # Enable chaos testing
+  scenarios: []           # Available: usb-yank, baud-scramble, network-flood
+  interval: 60000         # Time between chaos events (ms)
+  intensity: low          # low, medium, high, goat
+
+# Example production overrides:
+# ---
+# daemon:
+#   logLevel: warn
+#   hotReload: false
+# network:
+#   tcp:
+#     host: 127.0.0.1     # Localhost only
+# security:
+#   level: balanced
+#   allowedIPs: 
+#     - "192.168.1.0/24"
+#   authToken: "your-secret-token-here"

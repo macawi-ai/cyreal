@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2025 Macawi AI
+Copyright (c) 2025 Macawi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,50 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Attribution Requirements
+
+When using Cyreal in your projects, please include the following attribution:
+
+**For Software/Documentation:**
+```
+Powered by Cyreal - Cybernetic Serial Port Bridge
+https://github.com/cyreal-project/cyreal
+```
+
+**For Academic/Research Work:**
+```
+This work utilizes Cyreal, a cybernetic serial port bridge implementing 
+Stafford Beer's Viable System Model for adaptive hardware communication.
+```
+
+**For Commercial Products:**
+Include attribution in your product documentation, about page, or credits section.
+
+---
+
+## Cybernetic Ecology Maintenance
+
+By using Cyreal, you become part of our cybernetic ecosystem. To keep this 
+ecology healthy and help us handle variety and noise from diverse implementations:
+
+### Recommended Practices:
+- **Report Issues**: Help us learn from real-world usage patterns
+- **Share Configurations**: Contribute platform-specific optimizations
+- **Update Regularly**: Benefit from and contribute to our learning governors
+- **Document Usage**: Help others learn from your implementation patterns
+
+### Community Guidelines:
+- **Attribution**: Always include proper attribution (required)
+- **Feedback**: Share learnings with the community (encouraged)
+- **Updates**: Keep implementations current for security and performance (recommended)
+- **Support**: Help others in the community when possible (appreciated)
+
+The strength of our cybernetic system comes from the diversity and health of 
+its ecosystem. Your attribution helps us track usage patterns, identify 
+optimization opportunities, and maintain the adaptive intelligence that makes 
+Cyreal unique.
+
+Thank you for being part of the Cyreal cybernetic ecosystem!
