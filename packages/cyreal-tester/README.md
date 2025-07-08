@@ -32,6 +32,10 @@ cyreal-test network --host localhost --port 3500 --all
 # Discover and test serial ports
 cyreal-test serial --list --rs485
 
+# Enhanced IoT device discovery and fingerprinting
+cyreal-test discover
+cyreal-test discover --detailed --industrial
+
 # Validate configuration
 cyreal-test config --validate --config /path/to/cyreal.yaml
 
@@ -65,6 +69,31 @@ cyreal-test platform --quiet --format json
 
 # Verbose output with detailed information
 cyreal-test platform --verbose
+```
+
+### Device Discovery Options
+
+```bash
+# Default user-friendly device discovery
+cyreal-test discover
+
+# Detailed output for power users (includes timing and debug info)
+cyreal-test discover --detailed
+
+# Industrial-grade formatting (no emojis, aligned columns)
+cyreal-test discover --industrial
+
+# Combined detailed + industrial for engineers
+cyreal-test discover --detailed --industrial
+
+# Enable advanced features
+cyreal-test discover --enable-protocols --enable-capabilities --enable-security
+
+# Safe mode (no device commands)
+cyreal-test discover --safe-mode
+
+# JSON output for automation
+cyreal-test discover --format json
 ```
 
 ### Advanced Options
@@ -108,6 +137,19 @@ cyreal-test health --critical-only
 - Configuration validation (baud rate, data bits, etc.)
 - RS-485 capabilities assessment
 - Cross-platform compatibility checks
+
+### Enhanced Device Discovery
+- Comprehensive USB device enumeration (serial + non-serial)
+- Device fingerprinting and identification
+- Privacy-first approach with opt-in community sharing
+- Security assessment and vulnerability detection
+- Protocol detection and capabilities inference
+- Mobile device detection (iPhone, Android)
+- Industrial device compatibility checking
+- Multiple output formats for different user types:
+  - **Default**: User-friendly with icons and summaries
+  - **Detailed**: Power-user format with timing and debug info
+  - **Industrial**: Enterprise format with no emojis and aligned columns
 
 ### Configuration Tests
 - YAML syntax validation

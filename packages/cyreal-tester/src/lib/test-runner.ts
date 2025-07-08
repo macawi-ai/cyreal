@@ -22,6 +22,7 @@ import { SerialTester } from './testers/serial-tester';
 import { ConfigTester } from './testers/config-tester';
 import { BenchmarkTester } from './testers/benchmark-tester';
 import { HealthTester } from './testers/health-tester';
+import { EnhancedDeviceTester } from './testers/enhanced-device-tester';
 
 export class TestRunner extends EventEmitter {
   private options: TestRunnerOptions;
@@ -62,6 +63,9 @@ export class TestRunner extends EventEmitter {
           break;
         case 'health':
           results.push(...await this.runHealthCheck(testOptions));
+          break;
+        case 'discover':
+          results.push(...await this.runDeviceDiscovery(testOptions));
           break;
         case 'all':
           results.push(...await this.runAllTests(testOptions));
@@ -239,6 +243,16 @@ export class TestRunner extends EventEmitter {
 
     results.push(await this.runSingleTest('System Health', 
       () => tester.performHealthCheck(options)));
+
+    return results;
+  }
+
+  private async runDeviceDiscovery(options: any): Promise<TestResult[]> {
+    const tester = new EnhancedDeviceTester(this.options);
+    const results: TestResult[] = [];
+
+    // Enhanced device discovery
+    results.push(...await tester.runEnhancedDiscovery(options));
 
     return results;
   }

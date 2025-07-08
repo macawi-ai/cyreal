@@ -31,6 +31,7 @@ export class PlatformTester {
     const virtualization = await this.detectVirtualizationBasic();
     const specialFeatures = await this.detectSpecialFeatures();
     const timingPrecision = await this.assessTimingPrecision();
+    const networkInfo = await this.getNetworkInfo();
 
     return {
       platform: platformName,
@@ -45,7 +46,8 @@ export class PlatformTester {
         recommendations: virtualization.recommendations
       } : undefined,
       specialFeatures,
-      timingPrecision
+      timingPrecision,
+      network: networkInfo
     };
   }
 
@@ -330,6 +332,75 @@ export class PlatformTester {
     if (precision < 12) return 'high';
     if (precision < 20) return 'medium';
     return 'low';
+  }
+
+  private async getNetworkInfo(): Promise<{
+    hostname: string;
+    interfaces: Array<{
+      name: string;
+      address: string;
+      family: 'IPv4' | 'IPv6';
+      internal: boolean;
+      mac?: string;
+      cidr?: string;
+    }>;
+    defaultGateway?: string;
+    dnsServers?: string[];
+  }> {
+    const hostname = os.hostname();
+    const networkInterfaces = os.networkInterfaces();
+    const interfaces: Array<{
+      name: string;
+      address: string;
+      family: 'IPv4' | 'IPv6';
+      internal: boolean;
+      mac?: string;
+      cidr?: string;
+    }> = [];
+
+    // Process network interfaces
+    for (const [name, interfaceList] of Object.entries(networkInterfaces)) {
+      if (interfaceList) {
+        for (const iface of interfaceList) {
+          interfaces.push({
+            name,
+            address: iface.address,
+            family: iface.family as 'IPv4' | 'IPv6',
+            internal: iface.internal,
+            mac: iface.mac,
+            cidr: iface.cidr || undefined
+          });
+        }
+      }
+    }
+
+    // Try to get DNS servers (platform-specific)
+    let dnsServers: string[] | undefined;
+    try {
+      if (process.platform === 'linux') {
+        const fs = await import('fs');
+        const resolvConf = fs.readFileSync('/etc/resolv.conf', 'utf8');
+        dnsServers = resolvConf
+          .split('\n')
+          .filter(line => line.startsWith('nameserver'))
+          .map(line => line.split(/\s+/)[1])
+          .filter(Boolean);
+      } else if (process.platform === 'darwin') {
+        const { exec } = await import('child_process');
+        const { promisify } = await import('util');
+        const execAsync = promisify(exec);
+        const { stdout } = await execAsync('scutil --dns | grep nameserver');
+        dnsServers = stdout.match(/\d+\.\d+\.\d+\.\d+/g) || [];
+      }
+    } catch (error) {
+      // DNS detection failed, continue without it
+    }
+
+    return {
+      hostname,
+      interfaces: interfaces.filter(iface => !iface.internal), // Only external interfaces
+      dnsServers
+    };
   }
 
   private checkForDockerEnv(): any {

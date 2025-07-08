@@ -4,7 +4,8 @@
   "description": "Command-line testing utility for Cyreal daemon and infrastructure",
   "main": "dist/index.js",
   "bin": {
-    "cyreal-test": "./dist/cli.js"
+    "cyreal-test": "./dist/cli.js",
+    "cyreal-tester": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc",

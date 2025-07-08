@@ -3,7 +3,7 @@
  */
 
 export type OutputFormat = 'text' | 'json' | 'yaml';
-export type TestSuite = 'platform' | 'network' | 'serial' | 'config' | 'benchmark' | 'all' | 'status' | 'health';
+export type TestSuite = 'platform' | 'network' | 'serial' | 'config' | 'benchmark' | 'all' | 'status' | 'health' | 'discover';
 export type TestStatus = 'pass' | 'fail' | 'warn' | 'skip';
 
 export interface TestResult {
@@ -150,6 +150,21 @@ export interface PlatformCapabilities {
   };
   specialFeatures: string[];
   timingPrecision: 'high' | 'medium' | 'low';
+  network?: {
+    hostname: string;
+    interfaces: NetworkInterface[];
+    defaultGateway?: string;
+    dnsServers?: string[];
+  };
+}
+
+export interface NetworkInterface {
+  name: string;
+  address: string;
+  family: 'IPv4' | 'IPv6';
+  internal: boolean;
+  mac?: string;
+  cidr?: string;
 }
 
 export interface BenchmarkResult {
