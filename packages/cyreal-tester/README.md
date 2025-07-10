@@ -8,14 +8,29 @@ Cyreal Tester is an independent testing tool that validates Cyreal daemon functi
 
 ## Installation
 
-### Standalone Installation
+### Development Installation (from source)
 ```bash
-npm install -g @cyreal/tester
+# Clone the repository
+git clone https://github.com/macawi-ai/cyreal.git
+cd cyreal
+npm install
+npm run build
+
+# Make CLI available globally
+cd packages/cyreal-tester
+npm link
+
+# Verify installation
+cyreal-test --version
 ```
 
-### As Part of Cyreal Suite
+### Published Package Installation (when available)
 ```bash
-npm install @cyreal/tester
+# Standalone installation
+npm install -g @cyreal/tester
+
+# As part of Cyreal suite
+npm install @cyreal/tester @cyreal/core @cyreal/a2a
 ```
 
 ## Usage

@@ -15,10 +15,9 @@ Welcome to the comprehensive documentation for Cyreal - the universal cybernetic
 - **[Network Configuration](networking.md)** - Network setup and protocols
 
 ### Core Features
-- **[Device Discovery](discovery.md)** - Hardware fingerprinting and device identification
 - **[Serial Communication](serial.md)** - Serial port protocols and configuration
-- **[AI Integration](ai-integration.md)** - Model Context Protocol (MCP) and AI features
-- **[Security Guide](security.md)** - Threat detection, policies, and security features
+- **[AI Integration](ai-integration.md)** - Agent-to-Agent (A2A) protocol and agent features
+- **[Security Guide](security.md)** - RFC-1918 enforcement, Agent Card authentication, and security features
 
 ### Advanced Topics
 - **[Troubleshooting](troubleshooting.md)** - Common issues and solutions
@@ -45,22 +44,32 @@ cyreal-core service --start
 cyreal-core service --status
 ```
 
-### Device Discovery & Fingerprinting
-Comprehensive hardware identification system with 1000+ device profiles:
+### Platform Testing & Validation
+Comprehensive platform testing and serial port management:
 ```bash
-# Discover all connected devices
-cyreal-test discover
+# Test platform capabilities
+cyreal-test platform
 
-# Security-focused enterprise output
-cyreal-test discover --enable-security --industrial
+# Test serial port functionality
+cyreal-test serial --list
 
 # JSON output for automation
-cyreal-test discover --format json
+cyreal-test platform --format json
 ```
 
 ### AI-Native Integration
-Built for Claude and other AI systems via Model Context Protocol:
+Built for secure agent communication via Agent-to-Agent protocol:
 ```javascript
+// Secure agent communication with RFC-1918 enforcement
+const cyreal = new CyrealA2A();
+await cyreal.connect({
+  endpoint: "https://192.168.1.100:8443",
+  agentCard: {
+    id: "temp-sensor-agent",
+    capabilities: ["modbus-read", "temperature-monitoring"]
+  }
+});
+
 // Natural language hardware control
 await cyreal.execute({
   command: "Read temperature from Modbus sensor",
@@ -70,11 +79,11 @@ await cyreal.execute({
 ```
 
 ### Security & Compliance
-Enterprise-grade security with threat detection:
-- USB device policy enforcement
-- Unauthorized device detection
-- Complete audit trails
-- SIEM integration ready
+Enterprise-grade security with RFC-1918 enforcement:
+- RFC-1918 private network address restrictions
+- Agent Card authentication with token management
+- Complete audit trails and input validation
+- CORS policies and rate limiting
 
 ## 🔧 Quick Command Reference
 
@@ -114,14 +123,14 @@ cyreal-core config --init production
 # System overview
 cyreal-test
 
-# Device discovery
-cyreal-test discover
-
-# Platform capabilities
+# Platform testing
 cyreal-test platform
 
-# Security assessment
-cyreal-test discover --enable-security
+# Serial port testing
+cyreal-test serial
+
+# Network connectivity
+cyreal-test network
 ```
 
 ## 🎯 Use Case Documentation
@@ -164,7 +173,7 @@ cyreal/
 │   ├── cyreal-core/        # Types, interfaces, device database
 │   ├── cyreald/           # Universal service with cross-platform support
 │   ├── cyreal-tester/     # CLI testing and discovery tool
-│   └── cyreal-mcp/        # AI integration server
+│   └── cyreal-a2a/        # A2A protocol server with RFC-1918 security
 ├── database/              # Device fingerprints (1000+ profiles)
 ├── docs/                  # Comprehensive documentation
 └── examples/              # Real-world usage examples
@@ -188,8 +197,8 @@ cyreal/
 3. [Set up monitoring and logging](service-management.md#configuration)
 
 ### AI Integration (45 minutes)
-1. [Set up MCP server](ai-integration.md#mcp-setup)
-2. [Configure Claude integration](ai-integration.md#claude-integration)
+1. [Set up A2A server](ai-integration.md#a2a-setup)
+2. [Configure Agent Card authentication](ai-integration.md#agent-integration)
 3. [Build your first AI-hardware application](ai-integration.md#examples)
 
 ## 🤝 Community & Support
@@ -206,18 +215,18 @@ cyreal/
 
 ## 📈 What's New
 
-### Latest Updates (Universal Service Architecture)
+### Latest Updates (A2A Protocol Architecture)
+- ✅ **A2A protocol implementation** - Google's Agent-to-Agent protocol
+- ✅ **RFC-1918 security enforcement** - Private network address restrictions
+- ✅ **Agent Card authentication** - Token-based security for production
 - ✅ **Cross-platform service management** - Linux, macOS, Windows support
-- ✅ **Security hardening** - Command injection protection, input validation
-- ✅ **Professional service installation** - systemd, launchd, Windows SCM
-- ✅ **Unified CLI commands** - Same commands work on all platforms
-- ✅ **Enterprise-ready naming** - Modern `cyreal-core` service architecture
+- ✅ **Input validation framework** - Command injection protection
 
 ### Coming Soon
-- 🔄 **Enhanced MCP integration** - Improved AI-hardware communication
+- 🔄 **Agent ecosystem expansion** - Multi-agent coordination protocols
 - 🔄 **Additional industrial protocols** - CAN bus, Profibus support
 - 🔄 **Web dashboard** - Browser-based device management
-- 🔄 **Plugin system** - Extensible device support
+- 🔄 **CORS and rate limiting** - Enhanced security features
 
 ---
 

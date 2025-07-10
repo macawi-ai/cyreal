@@ -1,7 +1,7 @@
 /**
  * Protocol engine types
  */
-export type ProtocolType = 'messagepack-rpc' | 'custom-binary' | 'json-rpc';
+export type ProtocolType = 'messagepack-rpc' | 'custom-binary' | 'json-rpc' | 'a2a-jsonrpc';
 
 /**
  * Message types for protocol communication
@@ -17,6 +17,51 @@ export interface Message {
     message: string;
     data?: any;
   };
+}
+
+/**
+ * A2A Agent Card for capability discovery
+ */
+export interface A2AAgentCard {
+  agentId: string;
+  name: string;
+  description: string;
+  version: string;
+  capabilities: A2ACapability[];
+  endpoints: A2AEndpoint[];
+  metadata?: Record<string, any>;
+  lastSeen: Date;
+}
+
+/**
+ * A2A Agent Capability
+ */
+export interface A2ACapability {
+  id: string;
+  name: string;
+  description: string;
+  input?: A2ASchema;
+  output?: A2ASchema;
+  category: 'serial' | 'network' | 'governance' | 'monitoring' | 'custom';
+}
+
+/**
+ * A2A Service Endpoint
+ */
+export interface A2AEndpoint {
+  url: string;
+  protocol: 'https' | 'wss';
+  methods: string[];
+  authentication: 'token' | 'mutual-tls' | 'none';
+}
+
+/**
+ * A2A Schema definition for inputs/outputs
+ */
+export interface A2ASchema {
+  type: string;
+  properties?: Record<string, any>;
+  required?: string[];
 }
 
 /**

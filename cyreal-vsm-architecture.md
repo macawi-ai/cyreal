@@ -40,16 +40,16 @@
 │                          Direct Serial Operations                   │
 ├─────────────────────────────────────────────────────────────────────┤
 │  SECURITY DOMAIN           │  COMMUNICATION DOMAIN                  │
-│  • Token Health Monitor    │  • Buffer Mode Governor              │
-│  • Device Change Detector  │  • Session State Governor            │
+│  • A2A Token Manager      │  • Buffer Mode Governor              │
+│  • Agent Card Validator   │  • Session State Governor            │
 │  • Rate Limiting Governor  │  • Packet Loss Handler               │
-│  • Access Control Governor │  • Protocol Engine Controller        │
+│  • RFC-1918 Enforcer      │  • Protocol Engine Controller        │
 ├─────────────────────────────────────────────────────────────────────┤
 │  HEALTH DOMAIN            │  SERIAL PORT DOMAIN                   │
 │  • Health Monitor         │  • Serial Port Controller             │
 │  • Recovery Actions       │  • RS-485 Bus Arbiter               │
 │  • Capability Advertiser  │  • GPIO Control Governor             │
-│  • Self-Healing Governor  │  • Discovery Security Governor       │
+│  • Self-Healing Governor  │  • A2A Service Discovery Governor    │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -83,26 +83,39 @@ All governors implement the same cybernetic pattern:
 - **Learn**: Build patterns from outcomes
 - **Validate**: Ensure effectiveness
 
-## Network Integration Architecture
+## A2A Agent Network Architecture
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌──────────────────┐
-│  AI Client  │────▶│ MCP Server  │────▶│ System 3: Port   │
-│  (Claude)   │◀────│             │◀────│ Manager Governor │
-└─────────────┘     └─────────────┘     └──────────────────┘
-                                                  │
-                                         ┌────────┴────────┐
-                                         ▼                 ▼
-                                  ┌─────────────┐   ┌─────────────┐
-                                  │  cyreald    │   │  cyreald    │
-                                  │ Instance 1  │   │ Instance 2  │
-                                  └─────────────┘   └─────────────┘
-                                         │                 │
-                                         ▼                 ▼
-                                  ┌─────────────┐   ┌─────────────┐
-                                  │Serial Device│   │Serial Device│
-                                  │  /dev/tty*  │   │  /dev/tty*  │
-                                  └─────────────┘   └─────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│                            A2A AGENT ECOSYSTEM                            │
+│                      (RFC-1918 Private Network Only)                      │
+└────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   AI Agent A    │─────│   A2A Server   │─────│   AI Agent B   │
+│ (Claude/GPT)   │     │ 192.168.1.100  │     │ (Specialized)  │
+│ Agent Card:    │     │  :8443 (HTTPS)  │     │ Agent Card:   │
+│ - nlp-control  │     │                │     │ - modbus-rtu  │
+│ - task-coord   │     │ 🔒 RFC-1918    │     │ - gpio-ctrl   │
+└─────────────────┘     │ Enforced       │     └─────────────────┘
+                        └─────────────────┘
+                                │
+                    ┌───────────┴───────────┐
+                    ▼                       ▼
+            ┌─────────────────┐   ┌─────────────────┐
+            │ Hardware Agent C │   │ Hardware Agent D │
+            │ 192.168.1.101   │   │ 192.168.1.102   │
+            │ Agent Card:     │   │ Agent Card:     │
+            │ - temp-monitor  │   │ - actuator-ctrl │
+            │ - alert-gen     │   │ - safety-mon    │
+            └─────────────────┘   └─────────────────┘
+                    │                       │
+                    ▼                       ▼
+            ┌─────────────────┐   ┌─────────────────┐
+            │ Serial Device   │   │ Serial Device   │
+            │ /dev/ttyUSB0    │   │ /dev/ttyUSB1    │
+            │ (Temp Sensors)  │   │ (Motor Ctrl)    │
+            └─────────────────┘   └─────────────────┘
 ```
 
 ## Practical Application for Threat Management
@@ -115,17 +128,33 @@ This VSM architecture demonstrates several key cybersecurity principles:
 4. **Observability**: Every level provides transparency for audit/monitoring
 5. **Proactive Response**: System 4 predicts threats before they materialize
 
-## Example: Threat Response Flow
+## Example: A2A Agent Coordination Flow
 
-When a device swap is detected (potential threat):
+When a temperature alert is generated in the agent network:
 
-1. **System 1**: Device Change Detector triggers alert
-2. **System 2**: Security Orchestrator coordinates response
-3. **System 3**: Port Manager may isolate the port
-4. **System 4**: Learning Pattern Governor analyzes if this is malicious
-5. **System 5**: Updates threat patterns for entire system
+1. **System 1**: Hardware Agent C detects temperature threshold exceeded
+2. **System 2**: A2A Security Orchestrator validates agent credentials and capabilities
+3. **System 3**: A2A Server coordinates response across agent network
+4. **System 4**: AI Agent A analyzes patterns and determines corrective actions
+5. **System 5**: Updates agent coordination patterns for entire ecosystem
 
-This creates a learning, adaptive security system that improves over time rather than relying on static rules.
+**Agent Communication Example:**
+```
+Agent C → A2A Server: {
+  "type": "alert",
+  "severity": "warning", 
+  "data": { "temperature": 85.2, "threshold": 80.0 },
+  "capabilities_required": ["actuator-ctrl", "safety-mon"]
+}
+
+A2A Server → Agent D: {
+  "type": "action_request",
+  "action": "reduce_heating",
+  "parameters": { "target_temp": 75.0 }
+}
+```
+
+This creates a self-coordinating agent network with cybernetic governance that adapts and learns optimal responses.
 
 ---
 *Cyreal: A practical implementation of Stafford Beer's Viable System Model for cybernetic system design*

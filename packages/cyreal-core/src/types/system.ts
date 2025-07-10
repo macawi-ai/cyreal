@@ -16,7 +16,8 @@ export enum GovernorDomain {
   SECURITY = 'security',
   COMMUNICATION = 'communication',
   HEALTH = 'health',
-  SERIAL_PORT = 'serial_port'
+  SERIAL_PORT = 'serial_port',
+  NETWORK = 'network'
 }
 
 /**

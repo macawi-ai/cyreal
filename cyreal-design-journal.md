@@ -2,9 +2,9 @@
 *Universal Cybernetic Service for AI Systems*
 
 ## Project Overview
-Cyreal provides cross-platform hardware integration for AI systems via Model Context Protocol (MCP). The system consists of:
+Cyreal provides cross-platform hardware integration for AI systems via Agent-to-Agent (A2A) protocol with enterprise-grade security. The system consists of:
 - **cyreal-core**: Universal service with cross-platform support (Linux, macOS, Windows)
-- **MCP Server**: Bridge between AI and remote cyreal-core instances
+- **A2A Server**: Secure agent communication with RFC-1918 enforcement and Agent Card authentication
 - **Cybernetic Governors**: Self-monitoring and adaptive control systems
 - **Universal Service Management**: Automated installation and management across platforms
 
@@ -12,14 +12,18 @@ Cyreal provides cross-platform hardware integration for AI systems via Model Con
 
 ### 1. Authentication Model ✅
 **Decision**: Mutual token-based authentication with revocation
-- Token pairs: `cyreal_token` + `mcp_token`
-- Local revocation via CLI: `cyreal-core revoke --token <mcp_token>`
+- Token pairs: `cyreal_token` + `a2a_token` with HMAC-SHA256 cryptographic security
+- Agent Card authentication with UUIDv4 identifiers and capability declarations
+- RFC-1918 enforcement preventing public internet exposure
+- Local revocation via CLI: `cyreal-a2a revoke --token <a2a_token>`
 - Optional time-based expiration (default: non-expiring)
 - Bilateral trust control without certificate complexity
 
 ### 2. Connection Architecture ✅
-**Decision**: One MCP server handles multiple cyreal ports
-- Single MCP instance manages 1-to-many cyreal-core connections
+**Decision**: One A2A server handles multiple agent connections with cybernetic coordination
+- Single A2A instance manages 1-to-many agent connections
+- Multi-agent orchestration with PSRLV governance patterns
+- Service discovery and capability-based routing
 - User-friendly port aliases (e.g., `cyreal_port_1`)
 - Unified tool interface for AI with clear port separation
 - Central Port Manager Governor for connection tracking
@@ -278,6 +282,30 @@ All major subsystems implement Probe-Sense-Respond-Learn-Validate cycles:
 - **New**: `cyreal-core` (universal service, platform-agnostic)
 - **Rationale**: Modern service terminology, cross-platform consistency, enterprise-ready naming
 
+### 21. A2A Protocol Implementation ✅
+**Decision**: Implement Google's Agent-to-Agent protocol with enhanced security for production environments
+- **Objective**: Enable secure agent communication with RFC-1918 enforcement and Agent Card authentication
+- **Security Priority**: Restrict agent communication to private networks to prevent internet exposure
+- **Authentication Framework**: Comprehensive Agent Cards with capability-based access control
+
+**Implementation**:
+- **RFC-1918 Validator**: Hard enforcement of private network addresses (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+- **Agent Card System**: Structured authentication with ID, capabilities, endpoints, and security metadata
+- **Service Discovery**: Secure agent discovery within private networks with timeout management
+- **Input Validation Framework**: Comprehensive protection against injection attacks and malformed requests
+
+**Security Architecture**:
+- **Network Isolation**: Prevents exposure to public internet and eliminates Shodan visibility
+- **Capability-Based Access**: Agents declare specific capabilities (modbus-rtu, gpio-control, etc.)
+- **Token Management**: Configurable token lifecycle with automatic expiration and revocation
+- **CORS and Rate Limiting**: Enterprise-grade traffic control and abuse prevention
+
+**Cybernetic Integration**:
+- **A2A Governor**: Implements PSRLV pattern for agent health monitoring and optimization
+- **Agent Registry**: Dynamic management of connected agents with heartbeat monitoring
+- **Load Balancing**: Intelligent distribution of requests across agent instances
+- **VSM Integration**: Agent ecosystem coordination within 5-level cybernetic architecture
+
 ## Implementation Plan
 
 ### Phase 1: Core Foundation ✅
@@ -287,11 +315,11 @@ All major subsystems implement Probe-Sense-Respond-Learn-Validate cycles:
 - [x] Create cyreald daemon skeleton
 - [x] Platform detection and adaptation
 
-### Phase 2: MCP Integration
-- [ ] Implement MCP server with tool definitions
-- [ ] Create port management system
-- [ ] Build authentication framework
-- [ ] Establish cyreald-MCP communication
+### Phase 2: A2A Integration ✅
+- [x] Implement A2A server with RFC-1918 enforcement
+- [x] Create Agent Card authentication system
+- [x] Build secure port management system
+- [x] Establish cyreald-A2A communication with input validation
 
 ### Phase 3: Governor Implementation
 - [ ] Implement System 1 operational governors

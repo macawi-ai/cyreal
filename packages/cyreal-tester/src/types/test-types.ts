@@ -3,7 +3,7 @@
  */
 
 export type OutputFormat = 'text' | 'json' | 'yaml';
-export type TestSuite = 'platform' | 'network' | 'serial' | 'config' | 'benchmark' | 'all' | 'status' | 'health' | 'discover';
+export type TestSuite = 'platform' | 'network' | 'serial' | 'config' | 'benchmark' | 'all' | 'status' | 'health';
 export type TestStatus = 'pass' | 'fail' | 'warn' | 'skip';
 
 export interface TestResult {

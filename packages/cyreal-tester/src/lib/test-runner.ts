@@ -22,7 +22,7 @@ import { SerialTester } from './testers/serial-tester';
 import { ConfigTester } from './testers/config-tester';
 import { BenchmarkTester } from './testers/benchmark-tester';
 import { HealthTester } from './testers/health-tester';
-import { EnhancedDeviceTester } from './testers/enhanced-device-tester';
+// EnhancedDeviceTester removed - fingerprinting functionality will be reimplemented after manufacturer consultation
 
 export class TestRunner extends EventEmitter {
   private options: TestRunnerOptions;
@@ -64,9 +64,7 @@ export class TestRunner extends EventEmitter {
         case 'health':
           results.push(...await this.runHealthCheck(testOptions));
           break;
-        case 'discover':
-          results.push(...await this.runDeviceDiscovery(testOptions));
-          break;
+        // Discovery functionality removed - reimplemented as A2A agent discovery
         case 'all':
           results.push(...await this.runAllTests(testOptions));
           break;
@@ -247,15 +245,7 @@ export class TestRunner extends EventEmitter {
     return results;
   }
 
-  private async runDeviceDiscovery(options: any): Promise<TestResult[]> {
-    const tester = new EnhancedDeviceTester(this.options);
-    const results: TestResult[] = [];
-
-    // Enhanced device discovery
-    results.push(...await tester.runEnhancedDiscovery(options));
-
-    return results;
-  }
+  // runDeviceDiscovery method removed - fingerprinting functionality will be reimplemented after manufacturer consultation
 
   private async runAllTests(options: any): Promise<TestResult[]> {
     const results: TestResult[] = [];

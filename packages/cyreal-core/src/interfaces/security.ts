@@ -5,7 +5,7 @@ import { SecurityLevel } from '../types/system';
  */
 export interface TokenPair {
   cyrealToken: string;
-  mcpToken: string;
+  a2aToken: string;
   createdAt: Date;
   expiresAt?: Date;
   renewable?: boolean;
@@ -61,12 +61,12 @@ export interface ITokenManager {
   /**
    * Authenticate with token pair
    */
-  authenticate(mcpToken: string, cyrealToken: string): Promise<AuthResult>;
+  authenticate(a2aToken: string, cyrealToken: string): Promise<AuthResult>;
   
   /**
    * Revoke a token
    */
-  revokeToken(mcpToken: string): Promise<void>;
+  revokeToken(a2aToken: string): Promise<void>;
   
   /**
    * List all active tokens
@@ -76,12 +76,23 @@ export interface ITokenManager {
   /**
    * Renew a token
    */
-  renewToken(mcpToken: string): Promise<TokenPair>;
+  renewToken(a2aToken: string): Promise<TokenPair>;
   
   /**
    * Get token permissions
    */
-  getPermissions(mcpToken: string): Promise<TokenPermissions | null>;
+  getPermissions(a2aToken: string): Promise<TokenPermissions | null>;
+}
+
+/**
+ * A2A Agent authentication
+ */
+export interface A2AAuthResult {
+  success: boolean;
+  agentCard?: import('./protocol').A2AAgentCard;
+  tokenPair?: TokenPair;
+  permissions?: TokenPermissions;
+  reason?: string;
 }
 
 /**
@@ -120,4 +131,24 @@ export interface ISecurityGovernor {
     indicators: string[];
     recommendations: string[];
   };
+}
+
+/**
+ * A2A Token Manager extending base token manager
+ */
+export interface IA2ATokenManager extends ITokenManager {
+  /**
+   * Authenticate with A2A Agent Card
+   */
+  authenticateAgent(agentCard: import('./protocol').A2AAgentCard): Promise<A2AAuthResult>;
+  
+  /**
+   * Validate agent card authenticity
+   */
+  validateAgentCard(agentCard: import('./protocol').A2AAgentCard): Promise<boolean>;
+  
+  /**
+   * Get agent by token
+   */
+  getAgentByToken(a2aToken: string): Promise<import('./protocol').A2AAgentCard | null>;
 }

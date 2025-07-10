@@ -14,11 +14,11 @@
 
 Cyreal is a comprehensive IoT platform that bridges the gap between hardware devices and modern software systems. Whether you're building industrial automation, developing IoT applications, securing infrastructure, or integrating AI with hardware, Cyreal provides the complete toolkit.
 
-### **🔍 Device Discovery & Fingerprinting**
-- **Automatic hardware detection** - Plug in any device, get instant identification
-- **1000+ device profiles** - ESP32, Arduino, LilyGo, industrial sensors, and more
-- **Community database** - Crowdsourced device fingerprints (privacy-first, opt-in)
-- **Real-time inventory** - Know every connected device instantly
+### **🔍 Serial Port Management**
+- **Automatic port detection** - Discover available serial ports instantly
+- **Universal protocol support** - RS-232, RS-485, USB Serial, TTL
+- **Cross-platform compatibility** - Works on Windows, Linux, macOS
+- **Real-time monitoring** - Track port status and connectivity
 
 ### **🔌 Universal Serial Communication**
 - **Cross-platform support** - Windows, Linux, macOS
@@ -27,9 +27,9 @@ Cyreal is a comprehensive IoT platform that bridges the gap between hardware dev
 - **Developer friendly** - Simple API, extensive documentation
 
 ### **🤖 AI-Native Integration**
-- **Model Context Protocol (MCP)** - Built for Claude and other AI systems
+- **Agent-to-Agent (A2A) Protocol** - Secure agent communication with RFC-1918 enforcement
 - **Cybernetic governance** - Self-monitoring, self-healing, adaptive behavior
-- **AI-ready APIs** - Let AI systems interact with physical hardware
+- **Agent Card authentication** - Token-based security for production environments
 - **Natural language control** - "Read temperature from sensor on port COM3"
 
 ### **🛡️ Security & Compliance**
@@ -42,12 +42,12 @@ Cyreal is a comprehensive IoT platform that bridges the gap between hardware dev
 
 ## 🌟 **Key Features**
 
-| **Device Discovery** | **Serial Communication** | **AI Integration** | **Security** |
+| **Serial Management** | **Communication** | **AI Integration** | **Security** |
 |---------------------|-------------------------|-------------------|--------------|
-| ✅ Plug & identify | ✅ Cross-platform | ✅ MCP protocol | ✅ Threat detection |
-| ✅ Hardware fingerprinting | ✅ All serial protocols | ✅ Claude ready | ✅ Policy enforcement |
-| ✅ Vendor detection | ✅ Industrial protocols | ✅ Natural language | ✅ Audit logging |
-| ✅ Capability assessment | ✅ GPIO control | ✅ Adaptive behavior | ✅ Compliance |
+| ✅ Port discovery | ✅ Cross-platform | ✅ A2A protocol | ✅ RFC-1918 security |
+| ✅ Multi-protocol support | ✅ All serial protocols | ✅ Agent Cards | ✅ Token authentication |
+| ✅ Real-time monitoring | ✅ Industrial protocols | ✅ Natural language | ✅ Audit logging |
+| ✅ Platform optimization | ✅ GPIO control | ✅ Adaptive behavior | ✅ Input validation |
 
 ---
 
@@ -56,16 +56,18 @@ Cyreal is a comprehensive IoT platform that bridges the gap between hardware dev
 ### **Installation**
 
 ```bash
-# Linux/macOS
-curl -fsSL https://raw.githubusercontent.com/cyreal-project/cyreal/main/install.sh | bash
-
-# Windows (PowerShell as Administrator)
-iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyreal-project/cyreal/main/install.ps1'))
-
-# Or clone and install manually
-git clone https://github.com/cyreal-project/cyreal.git
+# Development installation (from source)
+git clone https://github.com/macawi-ai/cyreal.git
 cd cyreal
-./install.sh --install-dir ~/cyreal-deployment
+npm install
+npm run build
+
+# Install individual packages
+npm install -g @cyreal/core @cyreal/a2a @cyreal/tester
+
+# Or install all packages from the monorepo
+npm run bootstrap
+npm run build
 ```
 
 ### **Basic Usage**
@@ -74,52 +76,54 @@ cd cyreal
 # Quick system overview
 cyreal-test
 
-# Discover connected devices (clean business format)
-cyreal-test discover
+# Test platform capabilities
+cyreal-test platform
 
-# Detailed power-user output with timings
-cyreal-test discover --detailed
+# Test network connectivity
+cyreal-test network
 
-# Industrial-grade formatting (enterprise/compliance)
-cyreal-test discover --industrial
+# Test serial port functionality
+cyreal-test serial
 
-# Comprehensive device discovery with security assessment
-cyreal-test discover --enable-security --industrial
-
-# List serial ports
-cyreal-core list
-
-# Start service
-cyreal-core start --port /dev/ttyUSB0 --baudrate 115200
+# Start A2A server
+cyreal-a2a start --host 192.168.1.100 --port 3500
 ```
 
 ---
 
 ## 📊 **Real-World Examples**
 
-### **Example 1: IoT Device Discovery**
+### **Example 1: Serial Port Discovery**
 ```bash
-$ cyreal-test discover
+$ cyreal-test serial --list
 
-🔍 Device Discovery Results:
+🔍 Available Serial Ports:
 ┌─────────────────────────────────────────────────────┐
-│ 📱 LilyGo TTGO LoRaWAN 868/915MHz                   │
-│ 🔗 VID:10c4 PID:ea60 • /dev/ttyUSB0                │
-│ ⚙️  Protocols: UART, LoRaWAN, AT Commands           │
-│ 🔧 Settings: 115200 baud, 8N1                       │
-│ 📊 Confidence: 95% (verified profile)               │
+│ 🔌 /dev/ttyUSB0                                     │
+│ 🔗 FTDI USB Serial Device                          │
+│ ⚙️  Ready for communication                        │
+│ 🔧 Supports: 9600-921600 baud                      │
 └─────────────────────────────────────────────────────┘
 
-💡 This device is perfect for:
-   - Long-range IoT sensor networks
-   - Industrial monitoring (up to 15km range)
-   - Low-power asset tracking
+💡 Perfect for:
+   - Arduino and ESP32 development
+   - Industrial sensor communication
+   - Protocol debugging and testing
 ```
 
 ### **Example 2: AI Hardware Control**
 ```javascript
-// MCP integration example
-const cyreal = new CyrealMCP();
+// A2A agent integration example
+const cyreal = new CyrealA2A();
+
+// Secure agent communication with RFC-1918 enforcement
+await cyreal.connect({
+  endpoint: "https://192.168.1.100:8443",
+  agentCard: {
+    id: "temp-sensor-agent",
+    capabilities: ["modbus-read", "temperature-monitoring"]
+  }
+});
 
 // Natural language hardware control
 await cyreal.execute({
@@ -131,28 +135,27 @@ await cyreal.execute({
 // Response: "Temperature: 23.5°C"
 ```
 
-### **Example 3: Security Monitoring**
+### **Example 3: Platform Testing**
 ```bash
-$ cyreal-test security-scan
+$ cyreal-test platform
 
-🛡️ Security Scan Results:
-✅ Arduino Uno (VID:2341) - Authorized development board
-✅ ESP32-S3 (VID:303a) - Authorized IoT device
-🚨 iPhone (VID:05ac) - Unauthorized mobile device!
-   ⚠️  Policy violation - requires approval
-   🔴 Risk: Data exfiltration possible
+🛡️ Platform Test Results:
+✅ Linux x64 - Optimal configuration
+✅ systemd service manager - Ready for deployment
+✅ Serial ports accessible - Permissions configured
+✅ GPIO capabilities - Available for RS-485 control
 ```
 
 ### **Example 4: Industrial Automation**
 ```bash
-# Modbus RTU communication
-cyreal-core modbus --port /dev/ttyUSB0 --baudrate 9600 --address 1
+# Start A2A server with industrial settings
+cyreal-a2a start --host 192.168.1.100 --port 3500 --verbose
 
-# RS-485 multi-drop bus
-cyreal-core start --port /dev/ttyUSB0 --rs485 --rts-pin 17
+# Test industrial platform capabilities
+cyreal-test platform --industrial --verbose
 
-# CAN bus monitoring
-cyreal-core can --port /dev/ttyUSB0 --bitrate 250000
+# Test serial port with RS-485 support
+cyreal-test serial --test /dev/ttyUSB0 --baud 9600 --rs485
 ```
 
 ---
@@ -172,13 +175,13 @@ Cyreal implements Stafford Beer's Viable System Model (VSM) with 5 hierarchical 
 ```
 cyreal/
 ├── packages/
-│   ├── cyreal-core/        # Types, interfaces, device database
+│   ├── cyreal-core/        # Types, interfaces, core utilities
 │   ├── cyreald/           # Universal service with cross-platform support
-│   ├── cyreal-tester/     # CLI testing and discovery tool
-│   └── cyreal-mcp/        # AI integration server
-├── database/              # Device fingerprints (1000+ profiles)
+│   ├── cyreal-tester/     # CLI testing and platform validation
+│   └── cyreal-a2a/        # A2A protocol server with RFC-1918 security
 ├── docs/                  # Comprehensive documentation
-└── examples/              # Real-world usage examples
+├── examples/              # Real-world usage examples
+└── service/               # Cross-platform service management
 ```
 
 ---
@@ -198,32 +201,32 @@ cyreal/
 - Asset tracking and monitoring
 
 ### **🛡️ Security Professionals**
-- USB threat detection
-- Device inventory auditing
-- Compliance monitoring
-- Incident response
+- Secure service deployment
+- Access control management
+- Audit trail monitoring
+- Compliance verification
 
 ### **🤖 AI Researchers**
-- Hardware-AI integration
+- Secure agent-to-agent communication
+- Hardware-AI integration with RFC-1918 security
 - Robotic control systems
-- Sensor data collection
-- Physical world interaction
+- Physical world interaction with token authentication
 
 ### **🏢 Enterprise IT**
-- Asset management
-- Policy enforcement
-- Shadow IT detection
-- Zero-trust validation
+- Service management
+- Cross-platform deployment
+- Security compliance
+- Infrastructure monitoring
 
 ---
 
 ## 🌍 **Community & Ecosystem**
 
-### **📊 Device Database**
-- **1000+ verified profiles** - Growing daily
-- **Community contributions** - Add your devices
-- **Vendor partnerships** - Official profiles from manufacturers
-- **Privacy-first** - Opt-in sharing, anonymous data only
+### **📊 Open Standards**
+- **Universal protocols** - RS-232, RS-485, Modbus, CAN support
+- **Cross-platform compatibility** - Linux, macOS, Windows
+- **Industry standards** - IEEE, MODBUS, CAN specifications
+- **Open source** - Transparent implementation
 
 ### **🤝 Open Source**
 - **MIT Licensed** - Use freely in any project
@@ -245,7 +248,7 @@ cyreal/
 - **[Platform Guide](docs/platforms.md)** - OS-specific configuration
 - **[Device Discovery](docs/discovery.md)** - Hardware fingerprinting system
 - **[Serial Communication](docs/serial.md)** - Protocol reference
-- **[AI Integration](docs/ai-integration.md)** - MCP and AI features
+- **[AI Integration](docs/ai-integration.md)** - A2A protocol and agent features
 - **[Security Guide](docs/security.md)** - Threat detection and policies
 - **[API Reference](docs/api.md)** - Complete API documentation
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
@@ -256,56 +259,56 @@ cyreal/
 
 ### **For Developers**
 ```bash
-# Quick device discovery
-cyreal-test discover
+# Platform capabilities test
+cyreal-test platform
 
-# Detailed output with timings and debug info
-cyreal-test discover --detailed --verbose
+# Serial port testing
+cyreal-test serial --list
 
-# JSON output for automation
-cyreal-test discover --format json
+# Network connectivity test
+cyreal-test network
 
-# Start serial communication
-cyreal-core start --port /dev/ttyUSB0 --baudrate 115200
+# Start A2A server
+cyreal-a2a start --host 192.168.1.100 --port 3500
 ```
 
 ### **For Security Teams**
 ```bash
-# Enterprise security assessment (clean, professional)
-cyreal-test discover --enable-security --industrial
+# Platform security assessment
+cyreal-test platform --verbose
 
-# Compliance reporting
-cyreal-test discover --enable-security --format json --industrial
+# A2A server information
+cyreal-a2a info
 
-# Monitor device connections with technical details
-cyreal-test discover --enable-security --detailed
+# Network security validation
+cyreal-test network --host 127.0.0.1 --port 3500
 ```
 
 ### **For Industrial Users**
 ```bash
-# Industrial control system format (no emojis, aligned)
-cyreal-test discover --industrial
-
-# Technical device status for operations
+# Industrial system monitoring
 cyreal-test platform --industrial --detailed
 
-# System health monitoring
-cyreal-test health --industrial --format yaml
+# Health assessment  
+cyreal-test health --format json
+
+# Comprehensive system testing
+cyreal-test all --industrial --verbose
 ```
 
 ### **Output Format Options**
 ```bash
-# Standard business format (default)
-cyreal-test discover
+# Standard format (default)
+cyreal-test platform
 
-# Power-user format with all timing data
-cyreal-test discover --detailed
+# Detailed technical output
+cyreal-test platform --detailed
 
 # Industrial/enterprise format (professional, no emojis)
-cyreal-test discover --industrial
+cyreal-test platform --industrial
 
 # Combine options for maximum detail
-cyreal-test discover --industrial --detailed --verbose
+cyreal-test platform --industrial --detailed --verbose
 ```
 
 ---
@@ -313,9 +316,9 @@ cyreal-test discover --industrial --detailed --verbose
 ## 🎯 **Why Choose Cyreal?**
 
 ### **🌟 Unique Advantages**
-- **Only platform** combining discovery + communication + AI + security
-- **Largest device database** with community contributions
-- **Cross-platform** true support (not just Linux)
+- **Universal service architecture** - works identically across all platforms
+- **Enterprise-grade security** - secure by design with professional deployment
+- **Cross-platform** true support (Linux, macOS, Windows)
 - **AI-native** design from the ground up
 - **Industrial grade** with consumer friendly interface
 
@@ -332,11 +335,11 @@ cyreal-test discover --industrial --detailed --verbose
 We welcome contributions from all communities!
 
 ### **Ways to Contribute**
-- **🔍 Device Profiles** - Add new hardware fingerprints
 - **🔧 Code** - Features, bug fixes, optimizations
 - **📚 Documentation** - Guides, tutorials, translations
 - **🧪 Testing** - Try new features, report issues
 - **💡 Ideas** - Suggest features, use cases
+- **🌐 Platform Support** - Help with additional OS support
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 

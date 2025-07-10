@@ -88,12 +88,7 @@ export class OutputFormatter {
     const lines: string[] = [];
     const summary = this.generateSummary(results);
 
-    // Check if this is device discovery
-    const isDeviceDiscovery = results.some(r => r.category === 'device-discovery');
-    
-    if (isDeviceDiscovery) {
-      return this.formatDeviceDiscoveryText(results);
-    }
+    // Device discovery formatting removed - functionality disabled
 
     // Header for non-device tests
     lines.push('');
@@ -236,91 +231,5 @@ export class OutputFormatter {
     return message.substring(0, maxLength - 3) + '...';
   }
 
-  private formatDeviceDiscoveryText(results: TestResult[]): string {
-    const lines: string[] = [];
-    const deviceResults = results.filter(r => r.category === 'device-discovery' && r.name !== 'Device Discovery Summary');
-    
-    // Header
-    lines.push('');
-    lines.push(this.colorize(chalk.cyan.bold, '🔍 Device Discovery'));
-    lines.push(this.colorize(chalk.gray, '═'.repeat(50)));
-    lines.push('');
-
-    if (deviceResults.length === 0) {
-      lines.push(this.colorize(chalk.yellow, '📱 No devices detected'));
-      lines.push('');
-      lines.push(this.colorize(chalk.gray, '💡 Try:'));
-      lines.push(this.colorize(chalk.gray, '   • Connect a USB device'));
-      lines.push(this.colorize(chalk.gray, '   • Run with --industrial for technical details'));
-      return lines.join('\n');
-    }
-
-    // Quick overview
-    const serialDevices = deviceResults.filter(r => r.details?.settings?.default?.baudRate > 0).length;
-    const mobileDevices = deviceResults.filter(r => r.details?.capabilities?.includes('mobile-device')).length;
-    const restrictedDevices = deviceResults.filter(r => r.details?.security?.level === 'insecure').length;
-
-    lines.push(this.colorize(chalk.bold, '📊 Quick Summary:'));
-    lines.push(`   💻 Total Devices: ${deviceResults.length}`);
-    if (serialDevices > 0) {
-      lines.push(this.colorize(chalk.green, `   🔌 Serial Interfaces: ${serialDevices}`));
-    }
-    if (mobileDevices > 0) {
-      lines.push(this.colorize(chalk.blue, `   📱 Mobile Devices: ${mobileDevices}`));
-    }
-    if (restrictedDevices > 0) {
-      lines.push(this.colorize(chalk.yellow, `   🔒 Access Restricted: ${restrictedDevices}`));
-    }
-    lines.push('');
-
-    // Device list
-    lines.push(this.colorize(chalk.bold, '🔗 Connected Devices:'));
-    lines.push('');
-
-    for (const result of deviceResults) {
-      const device = result.details;
-      if (!device) continue;
-
-      const deviceName = `${device.identity?.manufacturer || 'Unknown'} ${device.identity?.productFamily || 'Device'}`;
-      const isSerial = device.settings?.default?.baudRate > 0;
-      const isMobile = device.capabilities?.includes('mobile-device');
-      const isRestricted = device.security?.level === 'insecure';
-
-      // Device icon based on type
-      let icon = '🔧'; // Default
-      if (isMobile) icon = '📱';
-      else if (isSerial) icon = '🔌';
-
-      // Status indicator
-      let status = this.colorize(chalk.green, '✅');
-      if (isRestricted) status = this.colorize(chalk.yellow, '⚠️');
-
-      lines.push(`   ${icon} ${status} ${deviceName}`);
-      
-      // Show key info
-      if (isSerial) {
-        const settings = device.settings.default;
-        lines.push(this.colorize(chalk.gray, `      📡 Serial: ${settings.baudRate} baud, ${settings.dataBits}${settings.parity.charAt(0).toUpperCase()}${settings.stopBits}`));
-      } else if (isMobile) {
-        lines.push(this.colorize(chalk.gray, `      🔒 Mobile Device (${device.identity?.vid}:${device.identity?.pid})`));
-      } else {
-        lines.push(this.colorize(chalk.gray, `      🔧 USB Device (${device.identity?.vid}:${device.identity?.pid})`));
-      }
-
-      if (device.cyreal?.limitations && device.cyreal.limitations.length > 0) {
-        const limitation = device.cyreal.limitations[0];
-        lines.push(this.colorize(chalk.gray, `      ℹ️  ${limitation}`));
-      }
-      lines.push('');
-    }
-
-    // Quick tips
-    lines.push(this.colorize(chalk.bold, '💡 Pro Tips:'));
-    lines.push(this.colorize(chalk.gray, '   • Use --industrial for engineering details'));
-    lines.push(this.colorize(chalk.gray, '   • Use --detailed for complete analysis'));
-    lines.push(this.colorize(chalk.gray, '   • Use --format json for automation'));
-    lines.push('');
-
-    return lines.join('\n');
-  }
+  // formatDeviceDiscoveryText method removed - device discovery functionality disabled
 }

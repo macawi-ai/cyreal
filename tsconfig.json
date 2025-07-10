@@ -12,7 +12,7 @@
   "references": [
     { "path": "./packages/cyreal-core" },
     { "path": "./packages/cyreald" },
-    { "path": "./packages/cyreal-mcp" },
+    { "path": "./packages/cyreal-a2a" },
     { "path": "./packages/cyreal-tester" }
   ]
 }

@@ -127,20 +127,8 @@ program
     await runTest('health', options);
   });
 
-// Device Discovery Command
-program
-  .command('discover')
-  .description('Enhanced IoT device discovery and fingerprinting')
-  .option('--enable-protocols', 'Enable protocol detection')
-  .option('--enable-capabilities', 'Enable capability testing')
-  .option('--enable-security', 'Enable security assessment')
-  .option('--safe-mode', 'Run in safe mode (no device commands)')
-  .option('--inventory', 'Show device inventory')
-  .option('--detailed', 'Show detailed power-user output (timings, debug info)')
-  .option('--industrial', 'Use industrial-grade formatting (no emojis, aligned columns)')
-  .action(async (options) => {
-    await runTest('discover', options);
-  });
+// Device discovery functionality temporarily removed
+// Will be reimplemented after manufacturer consultation
 
 async function runDefaultSystemOverview(options: any) {
   // Default comprehensive system overview

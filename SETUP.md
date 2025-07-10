@@ -1,6 +1,6 @@
 # Cyreal Development Setup Guide
 
-This guide helps developers set up a Cyreal development environment and test the cybernetic serial port bridge with various hardware platforms.
+This guide helps developers set up a Cyreal development environment and test the cybernetic serial port bridge with secure A2A protocol support, RFC-1918 network restrictions, and Agent Card authentication across various hardware platforms.
 
 ## Quick Start for Development
 
@@ -265,9 +265,54 @@ ls -la /dev/tty*
 
 ## Next Steps
 
-1. **MCP Integration**: Connect to Claude or other AI systems
+1. **A2A Integration**: Connect to the agent ecosystem with RFC-1918 security
 2. **Industrial Protocols**: Add Modbus RTU support for DIN rail devices
-3. **Network Features**: Enable TCP/UDP bridging
+3. **Network Features**: Enable TCP/UDP bridging with Agent Card authentication
 4. **Custom Governors**: Implement application-specific learning patterns
 
-Your hardware-optimized Cyreal system is now ready to provide cybernetic serial port management!
+Your hardware-optimized Cyreal system is now ready to provide cybernetic serial port management with A2A protocol security!
+
+## A2A Protocol Configuration
+
+### Basic A2A Server Setup
+
+```bash
+# Start A2A server with RFC-1918 enforcement
+cyreal-a2a start --host 192.168.1.100 --port 8443 --ssl
+
+# Generate Agent Card for authentication
+cyreal-a2a generate-card --name "industrial-gateway" --capabilities "modbus-rtu,gpio-control"
+
+# List active agents
+cyreal-a2a list-agents
+```
+
+### Security Configuration
+
+```bash
+# Enable RFC-1918 enforcement (default: enabled)
+cyreal-a2a config --enforce-rfc1918 true
+
+# Configure token expiry (default: 60 minutes)
+cyreal-a2a config --token-expiry 120
+
+# Set maximum connected agents (default: 10)
+cyreal-a2a config --max-agents 25
+```
+
+### Agent Registration
+
+```javascript
+// Register with A2A server
+const agent = new CyrealA2AAgent({
+  endpoint: "https://192.168.1.100:8443",
+  agentCard: {
+    id: "sensor-controller-001",
+    name: "Temperature Sensor Controller",
+    capabilities: ["temperature-read", "modbus-rtu"],
+    description: "Industrial temperature monitoring agent"
+  }
+});
+
+await agent.connect();
+```

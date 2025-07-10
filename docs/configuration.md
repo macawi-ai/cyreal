@@ -36,29 +36,42 @@ Cyreal supports three configuration methods, in order of precedence:
 
 ### Basic Usage
 ```bash
-cyreal-core [command] [options]
+cyreal-a2a [command] [options]
 ```
 
 ### Commands
 
-#### `start` - Start the service
+#### `start` - Start the A2A server
 ```bash
-cyreal-core start [options]
+cyreal-a2a start [options]
 ```
 
-#### `list` - List available serial ports
+#### `validate` - Validate IP address for RFC-1918 compliance
 ```bash
-cyreald list [--verbose]
+cyreal-a2a validate <address>
 ```
 
-#### `test` - Run diagnostics
+#### `info` - Show server information and capabilities
 ```bash
-cyreald test [--port <port>] [--verbose]
+cyreal-a2a info
 ```
 
-#### `config` - Manage configuration
+### Testing Commands
 ```bash
-cyreald config [--init|--show|--validate]
+# Test platform and connectivity
+cyreal-test platform [--verbose]
+
+# Test serial ports
+cyreal-test serial [--list] [--port <port>]
+
+# Test network connectivity
+cyreal-test network [--host <host>] [--port <port>]
+
+# Health check
+cyreal-test health
+
+# Run all tests
+cyreal-test all
 ```
 
 ### Global Options
@@ -71,50 +84,54 @@ cyreald config [--init|--show|--validate]
 | `--log-level <level>` | Log level: error, warn, info, debug | info |
 | `--no-color` | Disable colored output | false |
 
-### Start Command Options
-
-#### Required Options
-| Option | Description | Example |
-|--------|-------------|---------|
-| `-p, --port <path>` | Serial port path | `/dev/ttyUSB0`, `COM3` |
-
-#### Serial Port Options
-| Option | Description | Default |
-|--------|-------------|---------|
-| `-b, --baudrate <rate>` | Baud rate | 9600 |
-| `--databits <bits>` | Data bits (5,6,7,8) | 8 |
-| `--stopbits <bits>` | Stop bits (1,2) | 1 |
-| `--parity <type>` | Parity: none,even,odd,mark,space | none |
-| `--flow-control <type>` | Flow control: none,hardware,software | none |
-| `--rs485` | Enable RS-485 mode | false |
-| `--rts-pin <pin>` | GPIO pin for RS-485 RTS | - |
-| `--rs485-delay <ms>` | RS-485 turnaround delay | 1 |
+### A2A Start Command Options
 
 #### Network Options
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--tcp-port <port>` | TCP server port | 3001 |
-| `--tcp-host <host>` | TCP bind address | 0.0.0.0 |
-| `--udp-port <port>` | UDP server port | 3002 |
-| `--udp` | Enable UDP server | false |
-| `--max-connections <n>` | Max TCP connections | 10 |
+| `--host <address>` | Host to bind to (RFC-1918 or localhost) | 127.0.0.1 |
+| `--port <number>` | Port to listen on | 3500 |
+
+#### Agent Configuration
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--agent-id <string>` | Unique agent identifier | Auto-generated |
+| `--agent-name <string>` | Human-readable agent name | "Cyreal Cybernetic Serial Bridge" |
 
 #### Security Options
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--security <level>` | Security level (see below) | balanced |
-| `--auth-token <token>` | Authentication token | - |
-| `--ssl` | Enable SSL/TLS | false |
-| `--ssl-cert <file>` | SSL certificate file | - |
-| `--ssl-key <file>` | SSL key file | - |
+| `--cert <file>` | Path to SSL certificate file | ./certs/server.crt |
+| `--key <file>` | Path to SSL private key file | ./certs/server.key |
+| `--allow-http` | ⚠️ Allow HTTP instead of HTTPS | false |
+| `--disable-rfc1918` | 🚨 Disable RFC-1918 enforcement (DANGEROUS) | false |
 
-#### Performance Options
+#### General Options
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--buffer-size <bytes>` | I/O buffer size | 2048 |
-| `--low-latency` | Optimize for latency | false |
-| `--high-throughput` | Optimize for throughput | false |
-| `--polling-interval <ms>` | Status polling interval | 1000 |
+| `--verbose` | Enable verbose logging | false |
+
+### Test Command Options
+
+#### Platform Testing
+```bash
+cyreal-test platform [--virtualization] [--gpio] [--verbose] [--format json|yaml]
+```
+
+#### Network Testing
+```bash
+cyreal-test network [--host <host>] [--port <port>] [--all] [--timeout <ms>]
+```
+
+#### Serial Port Testing
+```bash
+cyreal-test serial [--list] [--test <port>] [--baud <rate>] [--rs485]
+```
+
+#### Device Discovery
+```bash
+cyreal-test discover [--detailed] [--industrial] [--safe-mode] [--format json]
+```
 
 ## Configuration File
 
