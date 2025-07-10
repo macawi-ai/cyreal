@@ -406,10 +406,45 @@ export class ConfigManager {
       case 'minimal':
         template = {
           network: {
-            tcp: { port: 3500 }
+            tcp: {
+              enabled: true,
+              port: 3500,
+              host: '0.0.0.0',
+              maxConnections: 10,
+              keepAlive: true,
+              keepAliveDelay: 60000
+            },
+            udp: {
+              enabled: false,
+              port: 3502,
+              host: '0.0.0.0',
+              broadcast: false
+            },
+            websocket: {
+              enabled: false,
+              port: 3503,
+              path: '/ws',
+              compression: false
+            },
+            ssl: {
+              enabled: false,
+              cert: '',
+              key: '',
+              ca: '',
+              rejectUnauthorized: true
+            }
           },
           ports: {
-            default: { baudRate: 9600 }
+            default: {
+              baudRate: 9600,
+              dataBits: 8 as const,
+              stopBits: 1 as const,
+              parity: 'none' as const,
+              flowControl: 'none' as const,
+              bufferSize: 2048,
+              timeout: 5000
+            },
+            specific: {}
           }
         };
         break;
@@ -418,18 +453,51 @@ export class ConfigManager {
         template = {
           daemon: {
             logLevel: 'warn' as const,
-            hotReload: false
+            hotReload: false,
+            workingDirectory: process.cwd()
           },
           network: {
             tcp: { 
+              enabled: true,
               port: 3500,
-              host: '127.0.0.1' // Localhost only for security
+              host: '127.0.0.1', // Localhost only for security
+              maxConnections: 50,
+              keepAlive: true,
+              keepAliveDelay: 60000
+            },
+            udp: {
+              enabled: false,
+              port: 3502,
+              host: '127.0.0.1',
+              broadcast: false
+            },
+            websocket: {
+              enabled: false,
+              port: 3503,
+              path: '/ws',
+              compression: false
+            },
+            ssl: {
+              enabled: false,
+              cert: '',
+              key: '',
+              ca: '',
+              rejectUnauthorized: true
             }
           },
           security: {
             level: 'balanced' as const,
             allowedIPs: ['127.0.0.1', '192.168.1.0/24'],
-            rateLimit: { enabled: true }
+            rateLimit: {
+              enabled: true,
+              requestsPerMinute: 60,
+              blacklistDuration: 3600000
+            },
+            audit: {
+              enabled: true,
+              logFile: '/var/log/cyreal/audit.log',
+              events: ['auth', 'command', 'error', 'security']
+            }
           }
         };
         break;

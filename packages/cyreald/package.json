@@ -33,6 +33,7 @@
     "@types/node": "^20.0.0",
     "@types/joi": "^17.2.3",
     "@types/ws": "^8.5.10",
+    "@types/node-cron": "^3.0.11",
     "typescript": "^5.0.0"
   },
   "license": "MIT"

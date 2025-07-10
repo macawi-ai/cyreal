@@ -112,7 +112,7 @@ export abstract class BaseGovernor extends EventEmitter implements IEventEmittin
         },
         capabilities: [
           ...this.getBaseCapabilities(),
-          ...specificProbe.capabilities
+          ...(specificProbe.capabilities || [])
         ]
       };
       
@@ -163,9 +163,9 @@ export abstract class BaseGovernor extends EventEmitter implements IEventEmittin
     const specificAnalysis = this.specificSense(data);
     
     return {
-      patterns: [...patterns, ...specificAnalysis.patterns],
-      anomalies: [...anomalies, ...specificAnalysis.anomalies],
-      recommendations: [...recommendations, ...specificAnalysis.recommendations],
+      patterns: [...patterns, ...(specificAnalysis.patterns || [])],
+      anomalies: [...anomalies, ...(specificAnalysis.anomalies || [])],
+      recommendations: [...recommendations, ...(specificAnalysis.recommendations || [])],
       confidence: this.calculateConfidence(patterns.length, anomalies.length)
     };
   }
@@ -210,8 +210,8 @@ export abstract class BaseGovernor extends EventEmitter implements IEventEmittin
       }
       
       // Recalculate statistics
-      history.avg = history.values.reduce((a, b) => a + b, 0) / history.values.length;
-      const variance = history.values.reduce((sum, val) => 
+      history.avg = history.values.reduce((a: number, b: number) => a + b, 0) / history.values.length;
+      const variance = history.values.reduce((sum: number, val: number) => 
         sum + Math.pow(val - history.avg, 2), 0) / history.values.length;
       history.stdDev = Math.sqrt(variance);
       
@@ -258,12 +258,12 @@ export abstract class BaseGovernor extends EventEmitter implements IEventEmittin
     
     // Governor-specific validation
     const specificValidation = this.specificValidate();
-    issues.push(...specificValidation.issues);
+    issues.push(...(specificValidation.issues || []));
     
     // Calculate health score
     const health = Math.round(
       (successRate * 0.5 + 
-       (specificValidation.health / 100) * 0.3 +
+       ((specificValidation.health || 0) / 100) * 0.3 +
        (this.metrics.learningCycles > 0 ? 0.2 : 0)) * 100
     );
     

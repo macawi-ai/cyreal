@@ -27,6 +27,9 @@ import {
 import { RFC1918Validator } from '../utils/rfc1918-validator';
 import { SecureA2ATokenManager } from '../security/a2a-token-manager';
 import { SecureMessageValidator } from '../security/message-validator';
+import { UserAuthenticationManager } from '../security/user-authentication';
+import { PCIAuditLogger } from '../security/pci-audit-logger';
+import { EncryptionManager } from '../security/encryption-manager';
 
 export class A2AServer extends EventEmitter implements IA2AServer {
   private config!: A2AConfig;
@@ -37,6 +40,9 @@ export class A2AServer extends EventEmitter implements IA2AServer {
   private validator: IRFC1918Validator;
   private tokenManager: SecureA2ATokenManager;
   private messageValidator: SecureMessageValidator;
+  private userAuth?: UserAuthenticationManager;
+  private auditLogger?: PCIAuditLogger;
+  private encryptionManager?: EncryptionManager;
   private agentCard!: A2AAgentCard;
   private isRunning = false;
   private startTime = 0;

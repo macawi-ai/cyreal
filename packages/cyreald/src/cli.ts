@@ -15,6 +15,8 @@ import { VERSION, COPYRIGHT_NOTICE, ECOSYSTEM_MESSAGE } from '@cyreal/core';
 import { ConfigManager, getConfigManager, CyrealConfig } from './config/config-manager';
 import { UniversalInstaller } from './services/universal-installer';
 import { PlatformManager } from './services/platform-manager';
+import { SelfRepairService } from './self-repair';
+import * as winston from 'winston';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -568,6 +570,99 @@ program
       
     } catch (error) {
       console.error('❌ Platform detection failed:', error);
+    }
+  });
+
+program
+  .command('repair')
+  .description('Run self-diagnostic and repair common issues')
+  .option('-v, --verbose', 'Show detailed repair information')
+  .option('--fix-permissions', 'Fix file and directory permissions')
+  .option('--check-only', 'Only check for issues, do not fix')
+  .action(async (options) => {
+    // Create logger for repair service
+    const logger = winston.createLogger({
+      level: options.verbose ? 'debug' : 'info',
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.printf(({ timestamp, level, message }) => {
+          return `${timestamp} [REPAIR] ${level}: ${message}`;
+        })
+      ),
+      transports: [new winston.transports.Console()]
+    });
+
+    const repairService = new SelfRepairService(logger);
+    
+    try {
+      console.log('🔧 Running Cyreal self-diagnostic and repair...\n');
+      
+      const report = await repairService.runDiagnostics();
+      
+      // Display results
+      console.log('\n📋 Diagnostic Report');
+      console.log('══════════════════════════════════════');
+      
+      if (report.healthy) {
+        console.log('✅ All systems healthy! No issues found.\n');
+      } else {
+        console.log(`Found ${report.issues.length} issues:\n`);
+        
+        // Show fixed issues
+        if (report.fixed.length > 0) {
+          console.log('✅ Fixed automatically:');
+          report.fixed.forEach(fix => {
+            console.log(`   - ${fix}`);
+          });
+          console.log('');
+        }
+        
+        // Show remaining issues
+        if (report.needsAttention.length > 0) {
+          console.log('⚠️  Need your attention:');
+          report.needsAttention.forEach(issue => {
+            const icon = issue.severity === 'critical' ? '🚨' : 
+                        issue.severity === 'high' ? '❌' :
+                        issue.severity === 'medium' ? '⚠️' : 'ℹ️';
+            
+            console.log(`\n${icon} ${issue.description}`);
+            if (issue.userAction) {
+              console.log(`   ACTION: ${issue.userAction}`);
+            }
+          });
+        }
+      }
+      
+      console.log('\n💡 Tips:');
+      console.log('- Run with --verbose for detailed information');
+      console.log('- Check dashboard at http://localhost:8443');
+      console.log('- Contact support@cyreal.io if issues persist\n');
+      
+    } catch (error) {
+      console.error('❌ Repair failed:', error.message);
+      console.error('\nTry running as Administrator/root');
+      process.exit(1);
+    }
+  });
+
+program
+  .command('health')
+  .description('Quick health check')
+  .action(async () => {
+    const logger = winston.createLogger({
+      level: 'error',
+      transports: [new winston.transports.Console()]
+    });
+    
+    const repairService = new SelfRepairService(logger);
+    const status = await repairService.getHealthStatus();
+    
+    const icon = status.healthy ? '✅' : '⚠️';
+    console.log(`\n${icon} ${status.message}`);
+    console.log(`Last check: ${status.lastCheck.toLocaleString()}`);
+    
+    if (!status.healthy) {
+      console.log(`\nRun 'cyreal repair' to fix issues`);
     }
   });
 

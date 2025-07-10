@@ -359,6 +359,15 @@ export class SecureMessageValidator {
         });
       }
 
+      // Check for credit card numbers (PCI-DSS compliance)
+      if (this.containsCreditCardNumber(params)) {
+        errors.push({
+          field: 'params',
+          message: 'Credit card number detected - use tokenization instead',
+          severity: 'critical'
+        });
+      }
+
       // Validate string lengths
       this.validateObjectStringLengths(params, 'params', errors);
     }
@@ -575,5 +584,68 @@ export class SecureMessageValidator {
     // Method names: alphanumeric + dots + hyphens
     const methodRegex = /^[a-zA-Z][a-zA-Z0-9._-]*$/;
     return methodRegex.test(method) && method.length <= 100;
+  }
+
+  /**
+   * Check for credit card numbers (PCI-DSS compliance)
+   */
+  private containsCreditCardNumber(obj: any): boolean {
+    const panPatterns = [
+      /\b(?:4[0-9]{12}(?:[0-9]{3})?)\b/, // Visa
+      /\b(?:5[1-5][0-9]{14})\b/, // Mastercard
+      /\b(?:3[47][0-9]{13})\b/, // American Express
+      /\b(?:6(?:011|5[0-9]{2})[0-9]{12})\b/, // Discover
+      /\b(?:3(?:0[0-5]|[68][0-9])[0-9]{11})\b/, // Diners Club
+      /\b(?:(?:2131|1800|35\d{3})\d{11})\b/ // JCB
+    ];
+    
+    const jsonStr = JSON.stringify(obj);
+    
+    // First check with regex patterns
+    for (const pattern of panPatterns) {
+      if (pattern.test(jsonStr)) {
+        // Extract potential card numbers
+        const matches = jsonStr.match(/\b\d{13,19}\b/g) || [];
+        for (const match of matches) {
+          if (this.isValidLuhn(match)) {
+            this.logger.warn('🚨 PCI WARNING: Credit card number detected in message', {
+              action: 'BLOCKED',
+              recommendation: 'Use tokenization for card data'
+            });
+            return true;
+          }
+        }
+      }
+    }
+    
+    return false;
+  }
+
+  /**
+   * Luhn algorithm validation
+   */
+  private isValidLuhn(cardNumber: string): boolean {
+    if (!cardNumber || cardNumber.length < 13 || cardNumber.length > 19) return false;
+    
+    let sum = 0;
+    let isEven = false;
+    
+    for (let i = cardNumber.length - 1; i >= 0; i--) {
+      let digit = parseInt(cardNumber[i], 10);
+      
+      if (isNaN(digit)) return false;
+      
+      if (isEven) {
+        digit *= 2;
+        if (digit > 9) {
+          digit = (digit % 10) + 1;
+        }
+      }
+      
+      sum += digit;
+      isEven = !isEven;
+    }
+    
+    return sum % 10 === 0;
   }
 }

@@ -22,6 +22,9 @@ export * from './a2a/a2a-server';
 // Export security components
 export * from './security/a2a-token-manager';
 export * from './security/message-validator';
+export * from './security/encryption-manager';
+export * from './security/pci-audit-logger';
+export * from './security/user-authentication';
 
 // Export constants
 export * from './constants/legal';

@@ -673,7 +673,7 @@ export class VirtualizationDetector {
   private analyzeResults(results: PromiseSettledResult<Partial<VirtualizationInfo>>[]): VirtualizationInfo {
     const validResults = results
       .filter((result): result is PromiseFulfilledResult<Partial<VirtualizationInfo>> => 
-        result.status === 'fulfilled' && result.value.confidence && result.value.confidence > 0
+        result.status === 'fulfilled' && result.value.confidence !== undefined && result.value.confidence > 0
       )
       .map(result => result.value)
       .sort((a, b) => (b.confidence || 0) - (a.confidence || 0));

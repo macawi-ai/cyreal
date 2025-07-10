@@ -17,7 +17,7 @@ import {
   PortOptions,
   PortStatus,
   PortCapabilities,
-  DeviceFingerprint,
+  // DeviceFingerprint, // Removed - pending manufacturer consultation
   PortMetrics,
   IGpioController
 } from '@cyreal/core';
@@ -28,7 +28,7 @@ export class SerialPortController extends BaseGovernor implements ICyrealPort {
   private rs485Controller?: IGpioController;
   private buffer: Buffer = Buffer.alloc(0);
   private portMetrics: PortMetrics;
-  private deviceFingerprint?: DeviceFingerprint;
+  // private deviceFingerprint?: DeviceFingerprint; // Removed - pending manufacturer consultation
   private lastBaudRateTest: Date = new Date();
   
   constructor(
@@ -77,9 +77,10 @@ export class SerialPortController extends BaseGovernor implements ICyrealPort {
     return PortStatus.OPERATIONAL;
   }
   
-  get fingerprint(): DeviceFingerprint | undefined {
-    return this.deviceFingerprint;
-  }
+  // Fingerprint functionality removed - pending manufacturer consultation
+  // get fingerprint(): DeviceFingerprint | undefined {
+  //   return this.deviceFingerprint;
+  // }
   
   /**
    * Open the serial port with platform-optimized settings
@@ -123,7 +124,7 @@ export class SerialPortController extends BaseGovernor implements ICyrealPort {
       });
       
       this.setupEventHandlers();
-      this.detectDevice();
+      // this.detectDevice(); // Removed - pending manufacturer consultation
       
       this.logger.info('Serial port opened successfully', {
         path: this.physicalPath,
@@ -426,7 +427,7 @@ export class SerialPortController extends BaseGovernor implements ICyrealPort {
     }
     
     try {
-      this.rs485Controller = await this.platform.createGpioController(options.rtsPin);
+      this.rs485Controller = await this.platform.createGpioController(options.rtsPin) || undefined;
       if (!this.rs485Controller) {
         this.logger.warn('GPIO controller not available, falling back to software control');
         return;
@@ -462,31 +463,32 @@ export class SerialPortController extends BaseGovernor implements ICyrealPort {
     });
   }
   
-  private async detectDevice(): Promise<void> {
-    // Try to detect device characteristics
-    try {
-      const info = await SerialPort.list();
-      const thisPort = info.find(p => p.path === this.physicalPath);
-      
-      if (thisPort) {
-        this.deviceFingerprint = {
-          vendorId: thisPort.vendorId,
-          productId: thisPort.productId,
-          serialNumber: thisPort.serialNumber,
-          manufacturer: thisPort.manufacturer,
-          deviceType: `${thisPort.manufacturer || 'Unknown'}_${thisPort.productId || 'Device'}`,
-          lastSeen: new Date()
-        };
-        
-        this.emit('device:detected', {
-          id: this.id,
-          fingerprint: this.deviceFingerprint
-        });
-      }
-    } catch (error) {
-      this.logger.warn('Device detection failed:', error);
-    }
-  }
+  // Device fingerprinting removed - pending manufacturer consultation
+  // private async detectDevice(): Promise<void> {
+  //   // Try to detect device characteristics
+  //   try {
+  //     const info = await SerialPort.list();
+  //     const thisPort = info.find(p => p.path === this.physicalPath);
+  //     
+  //     if (thisPort) {
+  //       this.deviceFingerprint = {
+  //         vendorId: thisPort.vendorId,
+  //         productId: thisPort.productId,
+  //         serialNumber: thisPort.serialNumber,
+  //         manufacturer: thisPort.manufacturer,
+  //         deviceType: `${thisPort.manufacturer || 'Unknown'}_${thisPort.productId || 'Device'}`,
+  //         lastSeen: new Date()
+  //       };
+  //       
+  //       this.emit('device:detected', {
+  //         id: this.id,
+  //         fingerprint: this.deviceFingerprint
+  //       });
+  //     }
+  //   } catch (error) {
+  //     this.logger.warn('Device detection failed:', error);
+  //   }
+  // }
   
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));

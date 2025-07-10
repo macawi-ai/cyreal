@@ -257,12 +257,6 @@ export class Cyreald {
     return { ...this.config };
   }
   
-  /**
-   * Get port controllers
-   */
-  getPortControllers(): SerialPortController[] {
-    return Array.from(this.portControllers.values());
-  }
   
   /**
    * Set up network event handlers
@@ -369,7 +363,7 @@ export class Cyreald {
       portId,
       status: controller.status,
       metrics: controller.getMetrics(),
-      fingerprint: controller.fingerprint,
+      // fingerprint removed - pending manufacturer consultation
       timestamp: new Date().toISOString()
     });
   }
@@ -437,7 +431,7 @@ export class Cyreald {
     controller.on('device:detected', (data) => {
       this.logger.info('Device detected on port', {
         portId: data.id,
-        fingerprint: data.fingerprint,
+        // fingerprint removed - pending manufacturer consultation
         platform: this.platform.info.name
       });
     });

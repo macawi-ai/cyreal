@@ -49,15 +49,16 @@ export interface PortOptions {
 
 /**
  * Device fingerprint for security tracking
+ * REMOVED - Pending manufacturer consultation on privacy-preserving implementation
  */
-export interface DeviceFingerprint {
-  vendorId?: string;
-  productId?: string;
-  serialNumber?: string;
-  manufacturer?: string;
-  deviceType?: string;
-  lastSeen: Date;
-}
+// export interface DeviceFingerprint {
+//   vendorId?: string;
+//   productId?: string;
+//   serialNumber?: string;
+//   manufacturer?: string;
+//   deviceType?: string;
+//   lastSeen: Date;
+// }
 
 /**
  * Port metrics
@@ -83,7 +84,7 @@ export interface ICyrealPort {
   readonly type: SerialPortType;
   readonly status: PortStatus;
   readonly capabilities: PortCapabilities;
-  readonly fingerprint?: DeviceFingerprint;
+  // readonly fingerprint?: DeviceFingerprint; // Removed - pending manufacturer consultation
   
   /**
    * Open the port with specified options

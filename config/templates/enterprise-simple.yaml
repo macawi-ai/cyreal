@@ -1,0 +1,173 @@
+# Cyreal Configuration for Enterprise
+# Simple, secure defaults for banks and businesses
+
+# Basic Settings
+daemon:
+  # Logging level: error, warn, info, debug
+  # For normal operation, use "warn"
+  logLevel: warn
+  
+  # Automatically reload when config changes
+  hotReload: true
+
+# Network Settings
+network:
+  # Main service port (don't change unless needed)
+  tcp:
+    enabled: true
+    port: 8443
+    # Only listen on local machine for security
+    host: 127.0.0.1
+
+# Security Settings
+security:
+  # Security level options:
+  # - paranoid: Block everything not explicitly allowed (banks)
+  # - balanced: Smart defaults with alerts (most businesses)
+  # - permissive: Allow most, block known threats (development)
+  level: balanced
+  
+  # Which IP addresses can connect
+  # Default: Only local network
+  allowedIPs:
+    - 127.0.0.1          # Local machine
+    - 192.168.0.0/16     # Private network (192.168.x.x)
+    - 10.0.0.0/8         # Private network (10.x.x.x)
+    - 172.16.0.0/12      # Private network (172.16-31.x.x)
+
+  # Audit logging for compliance
+  audit:
+    enabled: true
+    # Keep logs for this many days (365 for most compliance)
+    retentionDays: 365
+    
+    # What to log
+    events:
+      - device_connected
+      - device_blocked
+      - policy_violation
+      - authentication_failure
+      - configuration_change
+
+# Device Policies
+devices:
+  # USB Storage Devices (flash drives)
+  usb_storage:
+    # Options: allow, block, prompt
+    default: prompt
+    
+    # Specific devices to always allow (by serial number)
+    whitelist:
+      # - "SERIAL123"  # Example: IT Backup Drive
+    
+    # Alert when new device detected
+    alert: true
+
+  # Keyboards and Mice
+  keyboards:
+    default: allow
+    # Alert if new keyboard (possible keylogger)
+    alert_new: true
+
+  # Card Readers (critical for banks)
+  card_readers:
+    default: allow
+    # Monitor for hardware changes (skimmers)
+    monitor_changes: true
+    # Alert immediately on any change
+    alert_priority: critical
+
+  # Printers
+  printers:
+    default: allow
+    # Block network access from printers
+    network_isolation: true
+
+# Alert Settings
+alerts:
+  # Email alerts (required)
+  email:
+    enabled: true
+    to: security@yourcompany.com
+    from: cyreal@yourcompany.com
+    
+    # SMTP server settings
+    smtp:
+      host: smtp.yourcompany.com
+      port: 587
+      secure: true
+      # Leave blank to prompt for credentials
+      username: ""
+      password: ""
+
+  # SMS alerts (optional)
+  sms:
+    enabled: false
+    # to: "+1-555-555-5555"
+    # provider: twilio  # or any SMS gateway
+
+  # Alert priorities
+  priorities:
+    critical:  # Immediate email + SMS
+      - card_reader_changed
+      - multiple_auth_failures
+      - known_malware_device
+    
+    high:      # Email within 5 minutes
+      - unauthorized_device
+      - policy_violation
+      - new_keyboard
+    
+    medium:    # Email within 1 hour
+      - new_device_type
+      - configuration_change
+    
+    low:       # Daily summary
+      - device_connected
+      - device_disconnected
+
+# Compliance Settings
+compliance:
+  # Your compliance requirements
+  frameworks:
+    - PCI-DSS    # Payment Card Industry
+    # - HIPAA    # Healthcare
+    # - SOX      # Public companies
+    # - GLBA     # Financial services
+  
+  # Automatic reports
+  reporting:
+    # Options: daily, weekly, monthly, quarterly
+    frequency: monthly
+    
+    # Where to send reports
+    recipients:
+      - compliance@yourcompany.com
+      # - auditor@yourcompany.com
+
+# Performance Settings
+performance:
+  # How often to scan for new devices (milliseconds)
+  scan_interval: 5000  # 5 seconds
+  
+  # Database cleanup
+  cleanup:
+    # Remove old logs after this many days
+    logs_older_than: 400
+    
+    # Run cleanup at this time (24-hour format)
+    run_at: "02:00"
+
+# Backup Settings
+backup:
+  # Automatic backups
+  enabled: true
+  
+  # Where to save backups
+  location: "/var/backups/cyreal"
+  
+  # How many backups to keep
+  retention: 7
+  
+  # When to backup (24-hour format)
+  schedule: "03:00"
