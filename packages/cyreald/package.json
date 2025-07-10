@@ -1,9 +1,10 @@
 {
-  "name": "@cyreal/cyreald",
+  "name": "@cyreal/core-service",
   "version": "0.1.0",
-  "description": "Cybernetic serial port daemon",
+  "description": "Cyreal Core - Universal Cybernetic Service for AI Systems",
   "main": "dist/index.js",
   "bin": {
+    "cyreal-core": "./dist/cli.js",
     "cyreald": "./dist/cli.js"
   },
   "scripts": {

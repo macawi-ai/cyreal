@@ -13,6 +13,8 @@ import { Cyreald } from './index';
 import { SerialPort } from 'serialport';
 import { VERSION, COPYRIGHT_NOTICE, ECOSYSTEM_MESSAGE } from '@cyreal/core';
 import { ConfigManager, getConfigManager, CyrealConfig } from './config/config-manager';
+import { UniversalInstaller } from './services/universal-installer';
+import { PlatformManager } from './services/platform-manager';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -20,8 +22,8 @@ const program = new Command();
 let daemon: Cyreald;
 
 program
-  .name('cyreald')
-  .description('Cybernetic serial port daemon for AI systems')
+  .name('cyreal-core')
+  .description('Cyreal Core - Universal Cybernetic Service for AI Systems')
   .version(VERSION);
 
 program
@@ -85,8 +87,7 @@ program
         const controller = await daemon.createPort(
           options.id,
           options.port,
-          options.type,
-          portConfig
+          options.type
         );
         
         // Open the port with specified options
@@ -185,7 +186,7 @@ program
           const YAML = require('yaml');
           parsed = YAML.parse(content);
         } catch (error) {
-          console.error(`❌ YAML parsing failed: ${error.message}`);
+          console.error(`❌ YAML parsing failed: ${error instanceof Error ? error.message : String(error)}`);
           return;
         }
         
@@ -203,7 +204,7 @@ program
         const { spawn } = require('child_process');
         const child = spawn(editor, [configPath], { stdio: 'inherit' });
         
-        child.on('exit', (code) => {
+        child.on('exit', (code: number | null) => {
           if (code === 0) {
             console.log('✅ Configuration file updated');
           } else {
@@ -443,5 +444,131 @@ async function startDataMonitoring(controller: any): Promise<void> {
     console.log(`⚠️  Data monitoring stopped: ${error}`);
   }
 }
+
+// Service Management Commands
+program
+  .command('service')
+  .description('Service management (install, uninstall, start, stop, status)')
+  .option('--install', 'Install as system service')
+  .option('--uninstall', 'Uninstall system service')
+  .option('--start', 'Start service')
+  .option('--stop', 'Stop service')
+  .option('--status', 'Show service status')
+  .option('--restart', 'Restart service')
+  .option('--name <name>', 'Service name', 'cyreal-core')
+  .option('--user <user>', 'Service user')
+  .option('--group <group>', 'Service group')
+  .option('--auto-start', 'Enable auto-start', true)
+  .option('--force', 'Force operation')
+  .action(async (options) => {
+    try {
+      const installer = new UniversalInstaller({
+        serviceName: options.name,
+        user: options.user,
+        group: options.group,
+        autoStart: options.autoStart,
+        force: options.force
+      });
+      
+      const platformManager = new PlatformManager();
+      
+      if (options.install) {
+        const result = await installer.install();
+        if (!result.success) {
+          process.exit(1);
+        }
+        
+      } else if (options.uninstall) {
+        const result = await installer.uninstall();
+        if (!result.success) {
+          process.exit(1);
+        }
+        
+      } else if (options.start) {
+        await platformManager.startService(options.name);
+        console.log(`✅ Service '${options.name}' started`);
+        
+      } else if (options.stop) {
+        await platformManager.stopService(options.name);
+        console.log(`⏹️  Service '${options.name}' stopped`);
+        
+      } else if (options.restart) {
+        await platformManager.stopService(options.name);
+        await new Promise<void>(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+        await platformManager.startService(options.name);
+        console.log(`🔄 Service '${options.name}' restarted`);
+        
+      } else if (options.status) {
+        const platformInfo = platformManager.getPlatformInfo();
+        const serviceStatus = await platformManager.getServiceStatus(options.name);
+        const detailedStatus = await installer.status();
+        
+        console.log('🔍 Service Status Report');
+        console.log('═'.repeat(40));
+        console.log(`Platform: ${platformInfo.platform} (${platformInfo.architecture})`);
+        console.log(`Service Manager: ${platformInfo.serviceManager}`);
+        console.log(`Service Name: ${options.name}`);
+        console.log(`Status: ${serviceStatus}`);
+        console.log(`Installed: ${detailedStatus.installed ? '✅' : '❌'}`);
+        console.log(`Running: ${detailedStatus.running ? '✅' : '❌'}`);
+        console.log(`Config Exists: ${detailedStatus.configExists ? '✅' : '❌'}`);
+        console.log(`Logs Exist: ${detailedStatus.logsExist ? '✅' : '❌'}`);
+        
+      } else {
+        console.log('📖 Service Management Commands:');
+        console.log('  --install     Install as system service');
+        console.log('  --uninstall   Uninstall system service');
+        console.log('  --start       Start service');
+        console.log('  --stop        Stop service');
+        console.log('  --restart     Restart service');
+        console.log('  --status      Show service status');
+        console.log('');
+        console.log('Options:');
+        console.log('  --name <name>    Service name (default: cyreal-core)');
+        console.log('  --user <user>    Service user');
+        console.log('  --group <group>  Service group');
+        console.log('  --force          Force operation');
+      }
+      
+    } catch (error) {
+      console.error('❌ Service management failed:', error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Platform Information Command
+program
+  .command('platform')
+  .description('Show platform and service management information')
+  .action(async () => {
+    try {
+      const platformManager = new PlatformManager();
+      const info = platformManager.getPlatformInfo();
+      
+      console.log('🖥️  Platform Information');
+      console.log('═'.repeat(40));
+      console.log(`Platform: ${info.platform}`);
+      console.log(`Architecture: ${info.architecture}`);
+      console.log(`OS Version: ${info.version}`);
+      console.log(`Service Manager: ${info.serviceManager}`);
+      console.log(`Can Install Services: ${info.canInstallService ? '✅' : '❌'}`);
+      console.log(`Requires Elevation: ${info.requiresElevation ? '✅' : '❌'}`);
+      
+      if (info.serviceManager === 'systemd') {
+        console.log('');
+        console.log('📊 systemd Information:');
+        try {
+          const { execSync } = require('child_process');
+          const version = execSync('systemctl --version | head -1', { encoding: 'utf8' });
+          console.log(`Version: ${version.trim()}`);
+        } catch (error) {
+          console.log('Version: Unable to detect');
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Platform detection failed:', error);
+    }
+  });
 
 program.parse();
