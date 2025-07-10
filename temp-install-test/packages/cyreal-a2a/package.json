@@ -1,0 +1,35 @@
+{
+  "name": "@cyreal/a2a",
+  "version": "0.1.0",
+  "description": "A2A (Agent-to-Agent) server for Cyreal with RFC-1918 security enforcement",
+  "main": "dist/index.js",
+  "bin": {
+    "cyreal-a2a": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@cyreal/core": "^0.1.0",
+    "winston": "^3.11.0",
+    "yargs": "^17.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/yargs": "^17.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "a2a",
+    "agent-to-agent",
+    "cybernetic",
+    "serial-bridge",
+    "rfc-1918",
+    "security"
+  ],
+  "license": "MIT"
+}

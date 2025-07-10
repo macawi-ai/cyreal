@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "composite": true
+  },
+  "references": [
+    { "path": "./packages/cyreal-core" },
+    { "path": "./packages/cyreald" },
+    { "path": "./packages/cyreal-a2a" },
+    { "path": "./packages/cyreal-tester" }
+  ]
+}
