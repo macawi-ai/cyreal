@@ -1,24 +1,25 @@
 # Cyreal Design Journal
-*Cybernetic Serial Port Bridge for AI via MCP*
+*Universal Cybernetic Service for AI Systems*
 
 ## Project Overview
-Cyreal provides remote serial port access to AI systems via Model Context Protocol (MCP). The system consists of:
-- **cyreald**: Linux service providing serial port access over network
-- **MCP Server**: Bridge between AI and remote cyreald instances
+Cyreal provides cross-platform hardware integration for AI systems via Model Context Protocol (MCP). The system consists of:
+- **cyreal-core**: Universal service with cross-platform support (Linux, macOS, Windows)
+- **MCP Server**: Bridge between AI and remote cyreal-core instances
 - **Cybernetic Governors**: Self-monitoring and adaptive control systems
+- **Universal Service Management**: Automated installation and management across platforms
 
 ## Design Decisions Log
 
 ### 1. Authentication Model ✅
 **Decision**: Mutual token-based authentication with revocation
-- Token pairs: `cyreald_token` + `mcp_token`
-- Local revocation via CLI: `cyreald revoke --token <mcp_token>`
+- Token pairs: `cyreal_token` + `mcp_token`
+- Local revocation via CLI: `cyreal-core revoke --token <mcp_token>`
 - Optional time-based expiration (default: non-expiring)
 - Bilateral trust control without certificate complexity
 
 ### 2. Connection Architecture ✅
 **Decision**: One MCP server handles multiple cyreal ports
-- Single MCP instance manages 1-to-many cyreal connections
+- Single MCP instance manages 1-to-many cyreal-core connections
 - User-friendly port aliases (e.g., `cyreal_port_1`)
 - Unified tool interface for AI with clear port separation
 - Central Port Manager Governor for connection tracking
@@ -246,6 +247,36 @@ All major subsystems implement Probe-Sense-Respond-Learn-Validate cycles:
 - **BeagleBone AI-64**: PRU timing, Mikroe Click support, precision RS-485
 - **Banana Pi BPI-M7**: 6 TOPS NPU integration, high-speed serial (6Mbps)
 - **Raspberry Pi 5**: RP1 chip optimization, improved GPIO (gpiochip4)
+
+### 20. Universal Service Architecture ✅
+**Decision**: Cross-platform service management with security hardening
+- **Objective**: Move from Linux-only daemon to universal service supporting Windows, macOS, and Linux
+- **Security Priority**: Address command injection vulnerabilities discovered in Windows implementation
+- **Architecture**: Platform abstraction layer with service manager detection
+
+**Implementation**:
+- **PlatformManager**: Detects and abstracts systemd, launchd, SCM, and SysVinit
+- **UniversalInstaller**: Smart OS detection with platform-specific configurations
+- **SecureCommandExecutor**: Eliminates command injection via input validation and parameterized execution
+- **Service Management CLI**: Unified commands across all platforms (`cyreal-core service --install`)
+
+**Security Hardening**:
+- **Input Validation**: Service names, paths, descriptions validated against injection patterns
+- **Command Parameterization**: Arguments passed as arrays, never string concatenation
+- **Process Isolation**: Uses `spawn()` with `shell: false` instead of vulnerable `exec()`
+- **Privilege Control**: Command whitelisting for elevated operations
+- **Platform-Specific Security**: systemd hardening, launchd permissions, Windows SYSTEM account
+
+**Service Manager Support**:
+- **Linux systemd**: `/etc/systemd/system/` with security restrictions (NoNewPrivileges, ProtectSystem)
+- **Linux SysVinit**: `/etc/init.d/` scripts for legacy systems
+- **macOS launchd**: `/Library/LaunchDaemons/` with proper ownership and permissions
+- **Windows SCM**: Service registry with automatic recovery and event log integration
+
+**Naming Convention Evolution**:
+- **Old**: `cyreald` (daemon-specific, Linux-centric)
+- **New**: `cyreal-core` (universal service, platform-agnostic)
+- **Rationale**: Modern service terminology, cross-platform consistency, enterprise-ready naming
 
 ## Implementation Plan
 

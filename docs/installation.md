@@ -89,7 +89,7 @@ The installer will:
 2. Install Node.js dependencies
 3. Build all packages with TypeScript
 4. Create runtime directories for logs and data
-5. Set up global commands (`cyreald`, `cyreal-test`)
+5. Set up global commands (`cyreal-core`, `cyreal-test`)
 6. Configure platform-specific permissions
 
 ### Help and Options
@@ -109,7 +109,7 @@ The installer will:
 2. Install missing dependencies via winget
 3. Build all packages
 4. Create configuration directories in AppData
-5. Set up global `cyreald` command
+5. Set up global `cyreal-core` command
 
 ## Manual Installation
 

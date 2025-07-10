@@ -87,10 +87,10 @@ cyreal-test discover --industrial
 cyreal-test discover --enable-security --industrial
 
 # List serial ports
-cyreald list
+cyreal-core list
 
-# Start serial daemon
-cyreald start --port /dev/ttyUSB0 --baudrate 115200
+# Start service
+cyreal-core start --port /dev/ttyUSB0 --baudrate 115200
 ```
 
 ---
@@ -146,13 +146,13 @@ $ cyreal-test security-scan
 ### **Example 4: Industrial Automation**
 ```bash
 # Modbus RTU communication
-cyreald modbus --port /dev/ttyUSB0 --baudrate 9600 --address 1
+cyreal-core modbus --port /dev/ttyUSB0 --baudrate 9600 --address 1
 
 # RS-485 multi-drop bus
-cyreald start --port /dev/ttyUSB0 --rs485 --rts-pin 17
+cyreal-core start --port /dev/ttyUSB0 --rs485 --rts-pin 17
 
 # CAN bus monitoring
-cyreald can --port /dev/ttyUSB0 --bitrate 250000
+cyreal-core can --port /dev/ttyUSB0 --bitrate 250000
 ```
 
 ---
@@ -173,7 +173,7 @@ Cyreal implements Stafford Beer's Viable System Model (VSM) with 5 hierarchical 
 cyreal/
 ├── packages/
 │   ├── cyreal-core/        # Types, interfaces, device database
-│   ├── cyreald/           # Serial daemon with governors
+│   ├── cyreald/           # Universal service with cross-platform support
 │   ├── cyreal-tester/     # CLI testing and discovery tool
 │   └── cyreal-mcp/        # AI integration server
 ├── database/              # Device fingerprints (1000+ profiles)
@@ -266,7 +266,7 @@ cyreal-test discover --detailed --verbose
 cyreal-test discover --format json
 
 # Start serial communication
-cyreald start --port /dev/ttyUSB0 --baudrate 115200
+cyreal-core start --port /dev/ttyUSB0 --baudrate 115200
 ```
 
 ### **For Security Teams**

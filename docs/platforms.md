@@ -28,11 +28,11 @@ This guide covers platform-specific setup, optimization, and considerations for 
 Windows uses COM port naming (COM1, COM2, etc.):
 ```bash
 # List available COM ports
-cyreald list
+cyreal-core list
 # Output: COM1, COM3, COM7, etc.
 
 # Connect to a port
-cyreald start --port COM3 --baudrate 115200
+cyreal-core start --port COM3 --baudrate 115200
 ```
 
 #### USB Serial Drivers
@@ -49,7 +49,7 @@ Common USB-to-serial adapters and their drivers:
 Windows doesn't have GPIO, so RS-485 control uses RTS/DTR signals:
 ```bash
 # RS-485 with automatic RTS control
-cyreald start --port COM5 --baudrate 9600 --rs485
+cyreal-core start --port COM5 --baudrate 9600 --rs485
 
 # Manual RTS control via serial port settings
 # Handled automatically by Cyreal

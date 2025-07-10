@@ -36,14 +36,14 @@ Cyreal supports three configuration methods, in order of precedence:
 
 ### Basic Usage
 ```bash
-cyreald [command] [options]
+cyreal-core [command] [options]
 ```
 
 ### Commands
 
-#### `start` - Start the daemon
+#### `start` - Start the service
 ```bash
-cyreald start [options]
+cyreal-core start [options]
 ```
 
 #### `list` - List available serial ports

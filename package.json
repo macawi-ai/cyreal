@@ -1,7 +1,7 @@
 {
   "name": "cyreal",
   "version": "0.1.0",
-  "description": "Cybernetic serial port bridge for AI via Model Context Protocol",
+  "description": "Universal cybernetic service for AI systems with cross-platform hardware integration",
   "private": true,
   "workspaces": [
     "packages/*"

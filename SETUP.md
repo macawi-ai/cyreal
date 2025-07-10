@@ -41,10 +41,10 @@ sudo nano /boot/uEnv.txt
 # Save and reboot
 
 # Test the setup
-cyreald list  # Should show /dev/ttyS3
+cyreal-core list  # Should show /dev/ttyS3
 
 # Start with RS-485 Click board (MIKROE-1865)
-cyreald start \
+cyreal-core start \
   --port /dev/ttyS3 \
   --baudrate 115200 \
   --rs485 \
@@ -52,7 +52,7 @@ cyreald start \
   --log-level debug
 
 # For multiple Click boards with MIKROE-2880 Shuttle:
-cyreald start \
+cyreal-core start \
   --port /dev/ttyS3 --name "RS485_BUS" --rs485 --rts-pin 64 \
   --port /dev/ttyS4 --name "CAN_SERIAL" \
   --port /dev/ttyS5 --name "LORA_MODULE"
@@ -72,16 +72,16 @@ cyreald start \
 
 ```powershell
 # List available COM ports
-cyreald list
+cyreal-core list
 
 # Test with FTDI adapter
-cyreald start --port COM3 --baudrate 115200
+cyreal-core start --port COM3 --baudrate 115200
 
 # Test RS-485 using RTS/DTR control (automatic on Windows)
-cyreald start --port COM3 --baudrate 9600 --rs485
+cyreal-core start --port COM3 --baudrate 9600 --rs485
 
 # Multiple adapters
-cyreald start `
+cyreal-core start `
   --port COM3 --name "MAIN_BUS" --rs485 `
   --port COM4 --name "SENSOR_ARRAY" `
   --tcp-port 3001
@@ -95,10 +95,10 @@ sudo raspi-config
 # Interface Options -> Serial Port -> Enable
 
 # Test with USB adapter
-cyreald start --port /dev/ttyUSB0 --baudrate 115200
+cyreal-core start --port /dev/ttyUSB0 --baudrate 115200
 
 # Test with GPIO RS-485 control
-cyreald start \
+cyreal-core start \
   --port /dev/ttyAMA0 \
   --baudrate 9600 \
   --rs485 \
@@ -182,7 +182,7 @@ sudo node dist/cli.js start --port /dev/ttyUSB0
 
 ```bash
 # In another terminal, watch the logs
-tail -f /var/log/cyreal/cyreald.log
+tail -f /var/log/cyreal/cyreal-core.log
 
 # You'll see learning events like:
 # [SerialPortController_default] Governor learning completed
